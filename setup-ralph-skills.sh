@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+info()  { echo -e "${GREEN}→${NC} $*"; }
+warn()  { echo -e "${YELLOW}⚠${NC} $*"; }
+error() { echo -e "${RED}✗${NC} $*" >&2; }
+
 echo "============================================================="
 echo "  Ralph + Skills Bootstrapper (for Mark @MobiusSlit) - 2026 "
 echo "  Sets up ralph.sh loop + .github/skills/ with core skills  "
@@ -15,6 +25,12 @@ SKILLS_DIR=".github/skills"
 AGENTS_FILE="AGENTS.md"
 PRD_JSON="prd.json"
 
+# Check for curl
+if ! command -v curl &> /dev/null; then
+  error "curl is required but not installed"
+  exit 1
+fi
+
 mkdir -p "$RALPH_DIR" "$SKILLS_DIR"
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -22,15 +38,24 @@ mkdir -p "$RALPH_DIR" "$SKILLS_DIR"
 # You can swap URL to frankbria/ralph-claude-code or iannuttall/ralph if preferred
 # ──────────────────────────────────────────────────────────────────────────────
 
-echo "→ Downloading ralph.sh & prompt.md ..."
+RALPH_REPO="${RALPH_REPO:-snarktank/ralph}"
+RALPH_BRANCH="${RALPH_BRANCH:-main}"
+RALPH_BASE_URL="https://raw.githubusercontent.com/${RALPH_REPO}/${RALPH_BRANCH}"
 
-curl -sSL -o "$RALPH_DIR/ralph.sh" \
-  https://raw.githubusercontent.com/snarktank/ralph/main/ralph.sh
+info "Downloading ralph.sh & prompt.md from ${RALPH_REPO}..."
 
-curl -sSL -o "$RALPH_DIR/prompt.md" \
-  https://raw.githubusercontent.com/snarktank/ralph/main/prompt.md
+if ! curl -fsSL -o "$RALPH_DIR/ralph.sh" "${RALPH_BASE_URL}/ralph.sh"; then
+  error "Failed to download ralph.sh"
+  exit 1
+fi
+
+if ! curl -fsSL -o "$RALPH_DIR/prompt.md" "${RALPH_BASE_URL}/prompt.md"; then
+  error "Failed to download prompt.md"
+  exit 1
+fi
 
 chmod +x "$RALPH_DIR/ralph.sh"
+info "Downloaded and made executable: $RALPH_DIR/ralph.sh"
 
 # If you prefer frankbria's version (more features in 2026 forks):
 # curl -sSL -o "$RALPH_DIR/ralph.sh" https://raw.githubusercontent.com/frankbria/ralph-claude-code/main/ralph_loop.sh
@@ -40,7 +65,10 @@ chmod +x "$RALPH_DIR/ralph.sh"
 # Create AGENTS.md skeleton (persistent learnings + rules)
 # ──────────────────────────────────────────────────────────────────────────────
 
-cat > "$AGENTS_FILE" << 'EOF'
+if [[ -f "$AGENTS_FILE" ]]; then
+  warn "$AGENTS_FILE already exists — skipping (won't overwrite)"
+else
+  cat > "$AGENTS_FILE" << 'EOF'
 # AGENTS.md ────────────────────────────────────────────────────────────────
 # Persistent instructions & learnings for all AI agents (Ralph, Cursor, Copilot, Claude Code, etc.)
 
@@ -54,14 +82,17 @@ cat > "$AGENTS_FILE" << 'EOF'
 # (Agent will append here via learnings-updater skill)
 
 EOF
-
-echo "→ Created $AGENTS_FILE"
+  info "Created $AGENTS_FILE"
+fi
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Create example prd.json skeleton
 # ──────────────────────────────────────────────────────────────────────────────
 
-cat > "$PRD_JSON" << 'EOF'
+if [[ -f "$PRD_JSON" ]]; then
+  warn "$PRD_JSON already exists — skipping (won't overwrite)"
+else
+  cat > "$PRD_JSON" << 'EOF'
 [
   {
     "id": 1,
@@ -83,40 +114,58 @@ cat > "$PRD_JSON" << 'EOF'
   }
 ]
 EOF
-
-echo "→ Created example $PRD_JSON — replace with your real PRD"
+  info "Created example $PRD_JSON — replace with your real PRD"
+fi
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Skills ─ each in its own folder with SKILL.md
 # ──────────────────────────────────────────────────────────────────────────────
 
-declare -A skills=(
-  ["ralph-setup"]="Initialize or repair Ralph loop structure"
-  ["prd"]="Generate/refine/validate structured PRDs → JSON tasks"
-  ["back-pressure"]="Enforce test/type/lint gates before commits"
-  ["commit-convention"]="Use conventional commits with scope & verification"
-  ["code-review"]="Self-review changes for quality/security/readability"
-  ["test-architect"]="Write high-coverage tests (TDD preferred)"
-  ["learnings-updater"]="Append general lessons to AGENTS.md"
-  ["progress-logger"]="Maintain progress.txt with failures & patterns"
-  ["circuit-breaker"]="Detect stalled loops & halt"
-  ["cleanup"]="Clean temp files/branches after loop"
+# Define skills as a simple list (avoids associative array issues with set -u)
+# Format: "skill-name|description"
+SKILLS=(
+  "ralph-setup|Initialize or repair Ralph loop structure"
+  "prd|Generate/refine/validate structured PRDs → JSON tasks"
+  "back-pressure|Enforce test/type/lint gates before commits"
+  "commit-convention|Use conventional commits with scope & verification"
+  "code-review|Self-review changes for quality/security/readability"
+  "test-architect|Write high-coverage tests (TDD preferred)"
+  "learnings-updater|Append general lessons to AGENTS.md"
+  "progress-logger|Maintain progress.txt with failures & patterns"
+  "circuit-breaker|Detect stalled loops & halt"
+  "cleanup|Clean temp files/branches after loop"
 )
 
-for skill in "${!skills[@]}"; do
-  mkdir -p "$SKILLS_DIR/$skill"
-  cat > "$SKILLS_DIR/$skill/SKILL.md" << EOF
+for entry in "${SKILLS[@]}"; do
+  skill="${entry%%|*}"
+  description="${entry#*|}"
+  skill_dir="$SKILLS_DIR/$skill"
+  skill_file="$skill_dir/SKILL.md"
+  
+  mkdir -p "$skill_dir"
+  
+  if [[ -f "$skill_file" ]]; then
+    warn "Skill $skill already exists — skipping"
+    continue
+  fi
+  
+  # Convert skill name to readable form (replace hyphens with spaces)
+  readable_skill="${skill//-/ }"
+  # Lowercase description for metadata (compatible with Bash 3.2+)
+  lowercase_desc=$(echo "$description" | tr '[:upper:]' '[:lower:]')
+  
+  cat > "$skill_file" << EOF
 ---
 name: $skill
-description: ${skills[$skill]}
+description: $description
 metadata:
-  short-description: ${skills[$skill],,}
+  short-description: $lowercase_desc
 ---
 
 # $skill Skill
 
 ## When to use
-Use this skill when the task involves ${skill//-/ } or related concerns.
+Use this skill when the task involves $readable_skill or related concerns.
 
 ## Core Instructions
 - Follow project conventions from AGENTS.md
@@ -133,37 +182,40 @@ Always run appropriate checks:
 
 EOF
 
-  echo "→ Created skill: $skill"
+  info "Created skill: $skill"
 done
 
 # ──────────────────────────────────────────────────────────────────────────────
 # .gitignore additions (optional but recommended)
 # ──────────────────────────────────────────────────────────────────────────────
 
-if [[ -f .gitignore ]]; then
-  cat >> .gitignore << 'EOF'
-
+GITIGNORE_ENTRIES="
 # Ralph / Agent temp files
 .ralph/
 ralph-*.log
 progress.txt.bak
-EOF
-else
-  echo "# Ralph / Agent temp" > .gitignore
-  echo ".ralph/" >> .gitignore
-  echo "ralph-*.log" >> .gitignore
-  echo "progress.txt.bak" >> .gitignore
-fi
+"
 
-echo "→ Updated .gitignore"
+if [[ -f .gitignore ]]; then
+  # Only append if not already present
+  if ! grep -q "Ralph / Agent temp" .gitignore 2>/dev/null; then
+    echo "$GITIGNORE_ENTRIES" >> .gitignore
+    info "Updated .gitignore with Ralph entries"
+  else
+    warn ".gitignore already has Ralph entries — skipping"
+  fi
+else
+  echo "$GITIGNORE_ENTRIES" > .gitignore
+  info "Created .gitignore with Ralph entries"
+fi
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Final instructions
 # ──────────────────────────────────────────────────────────────────────────────
 
+echo ""
+echo -e "${GREEN}✓ Bootstrap complete!${NC}"
 cat << 'EOF'
-
-Bootstrap complete!
 
 Next steps:
 
