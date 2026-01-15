@@ -10,8 +10,8 @@ description: Initialize or repair Ralph loop structure
 ```
 scripts/ralph/ralph.sh   # loop runner
 scripts/ralph/prompt.md  # system prompt
-prd.json                 # task list
-progress.txt             # iteration log
+scripts/ralph/prd.json                 # task list
+scripts/ralph/progress.txt             # iteration log
 AGENTS.md                # persistent learnings
 ```
 
