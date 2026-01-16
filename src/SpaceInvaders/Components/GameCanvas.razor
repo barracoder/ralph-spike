@@ -15,6 +15,8 @@
     private DotNetObjectReference<GameCanvas>? _dotNetRef;
     private bool _isRunning;
     private Player _player = new();
+    private Bullet? _playerBullet;
+    private bool _spaceWasPressed;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -45,6 +47,26 @@
     {
         var keyState = await JSRuntime.InvokeAsync<KeyboardState>("keyboard.getState");
         _player.Update(keyState.Left, keyState.Right);
+
+        // Handle shooting (only fire on key down, not held)
+        if (keyState.Space && !_spaceWasPressed && _playerBullet == null)
+        {
+            // Fire bullet from center top of player
+            float bulletX = _player.X + (_player.Width / 2) - 2; // Center bullet (width 4)
+            float bulletY = _player.Y - 10; // Above player
+            _playerBullet = new Bullet(bulletX, bulletY);
+        }
+        _spaceWasPressed = keyState.Space;
+
+        // Update player bullet
+        if (_playerBullet != null)
+        {
+            _playerBullet.Update();
+            if (_playerBullet.IsOffScreen())
+            {
+                _playerBullet = null;
+            }
+        }
     }
 
     private async Task Render()
@@ -58,6 +80,13 @@
         // Draw player as green rectangle
         await _context.SetFillStyleAsync("#00FF00");
         await _context.FillRectAsync(_player.X, _player.Y, _player.Width, _player.Height);
+
+        // Draw player bullet (white)
+        if (_playerBullet != null)
+        {
+            await _context.SetFillStyleAsync("#FFFFFF");
+            await _context.FillRectAsync(_playerBullet.X, _playerBullet.Y, _playerBullet.Width, _playerBullet.Height);
+        }
     }
 
     public async ValueTask DisposeAsync()
