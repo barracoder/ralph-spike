@@ -25,6 +25,7 @@ cd ralph-spike
 Ralph autonomously implements stories from `scripts/ralph/prd.json`.
 
 ### With Copilot CLI
+
 ```bash
 ./scripts/ralph/ralph-copilot.sh [iterations] [model]
 
@@ -35,6 +36,7 @@ Ralph autonomously implements stories from `scripts/ralph/prd.json`.
 ```
 
 ### With Amp
+
 ```bash
 ./scripts/ralph/ralph.sh [iterations]
 ```
@@ -65,30 +67,34 @@ Ralph autonomously implements stories from `scripts/ralph/prd.json`.
   ]
 }
 ```
+
 }
+
 ```
 
 ## Project Structure
 
 ```
-├── AGENTS.md                    # Persistent learnings for AI agents
-├── PRD.md                       # Human-readable requirements
+
+├── AGENTS.md # Persistent learnings for AI agents
+├── PRD.md # Human-readable requirements
 ├── README.md
-├── .github/skills/              # Ralph skills
-│   ├── back-pressure/
-│   ├── circuit-breaker/
-│   ├── code-review/
-│   ├── commit-convention/
-│   ├── dev-browser/             # Playwright visual testing
-│   ├── prd/
-│   └── ...
+├── .github/skills/ # Ralph skills
+│ ├── back-pressure/
+│ ├── circuit-breaker/
+│ ├── code-review/
+│ ├── commit-convention/
+│ ├── dev-browser/ # Playwright visual testing
+│ ├── prd/
+│ └── ...
 ├── scripts/ralph/
-│   ├── prd.json                 # Machine-readable stories
-│   ├── prompt.md                # Agent system prompt
-│   ├── progress.txt             # Implementation log
-│   ├── ralph.sh                 # Amp version
-│   └── ralph-copilot.sh         # Copilot CLI version
-└── setup-ralph-skills.sh        # Bootstrap script
+│ ├── prd.json # Machine-readable stories
+│ ├── prompt.md # Agent system prompt
+│ ├── progress.txt # Implementation log
+│ ├── ralph.sh # Amp version
+│ └── ralph-copilot.sh # Copilot CLI version
+└── setup-ralph-skills.sh # Bootstrap script
+
 ```
 
 ## Skills
@@ -104,3 +110,4 @@ Ralph uses modular skills in `.github/skills/`:
 | `dev-browser` | Playwright visual verification |
 | `prd` | Generate/validate PRD JSON |
 | `test-architect` | TDD and high coverage tests |
+```
