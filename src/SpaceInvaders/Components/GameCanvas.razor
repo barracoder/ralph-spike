@@ -6,6 +6,7 @@
 @implements IAsyncDisposable
 
 <div class="game-container">
+    <ScoreDisplay Score="_score" HighScore="_highScore" Lives="_lives" />
     <BECanvas Width="800" Height="600" @ref="_canvasRef"></BECanvas>
 </div>
 
@@ -23,6 +24,8 @@
     private Random _random = new();
     private int _invaderShootTimer = 0;
     private int _lives = 3;
+    private int _score = 0;
+    private int _highScore = 0;
     private const int InvaderShootInterval = 90; // Fire every ~1.5 seconds at 60fps
     private const float CanvasHeight = 600;
 
@@ -93,6 +96,7 @@
     {
         await Update();
         await Render();
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task Update()
@@ -151,6 +155,8 @@
                     {
                         invader.IsAlive = false;
                         _playerBullet = null;
+                        _score += 100;
+                        if (_score > _highScore) _highScore = _score;
                         break;
                     }
                 }

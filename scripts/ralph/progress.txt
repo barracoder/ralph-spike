@@ -150,3 +150,16 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - Gotchas encountered: Removing bullets while iterating requires reverse loops or collection copies; render order matters.
   - Useful context: Shields default to 3 HP and are placed evenly between player and invaders.
 ---
+## 2026-01-16T00:55:11Z - Story 11
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- What was implemented
+  - ScoreDisplay.razor component showing Score, High Score, and Lives; wired to GameCanvas and updated in real-time.
+- Files changed
+  - src/SpaceInvaders/Components/ScoreDisplay.razor
+  - src/SpaceInvaders/Components/GameCanvas.razor
+  - scripts/ralph/prd.json
+- **Learnings for future iterations:**
+  - Score and lives are stored in GameCanvas; consider extracting to GameState service for cross-component access.
+  - Remember to call StateHasChanged after canvas render loop updates so Blazor markup updates.
+  - Keep score increment values centralized for easier tuning.
+---
