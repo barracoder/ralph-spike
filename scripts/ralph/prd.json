@@ -36,7 +36,7 @@
       "description": "Create Player.cs entity. Render green rectangle at bottom center. Move left/right with arrow keys or A/D. Stay within canvas bounds.",
       "acceptance_criteria": ["Player renders as rectangle", "Moves with keyboard", "Cannot exit canvas"],
       "verification_steps": ["Browser test keyboard controls"],
-      "passes": false
+      "passes": true
     },
     {
       "id": 5,

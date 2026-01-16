@@ -56,3 +56,18 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - Implement IAsyncDisposable to clean up JS resources and prevent memory leaks
   - requestAnimationFrame returns an ID needed for cancelAnimationFrame
 ---
+
+## 2026-01-16T00:30 - Story 4
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- Created Player.cs entity class in Entities directory
+- Implemented keyboard.js for input handling (Arrow keys + A/D)
+- Updated GameCanvas.razor with Update loop and player rendering
+- Player renders as green 50x20 rectangle at bottom center
+- Movement constrained to canvas bounds
+- Files changed: Entities/Player.cs, wwwroot/js/keyboard.js, Components/GameCanvas.razor, wwwroot/index.html
+- **Learnings for future iterations:**
+  - Use async mode for dotnet run, not detached (detached can fail silently)
+  - JS keyboard handler should use e.code (ArrowLeft, KeyA) not e.key
+  - Prevent default on arrow keys to avoid page scrolling
+  - KeyboardState class must have matching property names to JS object (Left/left case matters with default serialization)
+---
