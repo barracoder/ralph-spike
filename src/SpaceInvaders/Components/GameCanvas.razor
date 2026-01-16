@@ -26,6 +26,13 @@
     private const float InvaderStartX = 60;
     private const float InvaderStartY = 60;
 
+    // Invader movement state
+    private float _invaderDirection = 1; // 1 = right, -1 = left
+    private const float InvaderSpeed = 1.5f;
+    private const float InvaderDropAmount = 20f;
+    private const float CanvasWidth = 800;
+    private const float CanvasPadding = 10;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && _canvasRef != null)
@@ -88,6 +95,45 @@
             if (_playerBullet.IsOffScreen())
             {
                 _playerBullet = null;
+            }
+        }
+
+        // Update invader movement
+        UpdateInvaders();
+    }
+
+    private void UpdateInvaders()
+    {
+        var aliveInvaders = _invaders.Where(i => i.IsAlive).ToList();
+        if (aliveInvaders.Count == 0) return;
+
+        // Check if any invader would hit edge after this move
+        bool shouldReverse = false;
+        foreach (var invader in aliveInvaders)
+        {
+            float nextX = invader.X + (_invaderDirection * InvaderSpeed);
+            if (nextX <= CanvasPadding || nextX + invader.Width >= CanvasWidth - CanvasPadding)
+            {
+                shouldReverse = true;
+                break;
+            }
+        }
+
+        if (shouldReverse)
+        {
+            // Drop down and reverse direction
+            foreach (var invader in aliveInvaders)
+            {
+                invader.Move(0, InvaderDropAmount);
+            }
+            _invaderDirection *= -1;
+        }
+        else
+        {
+            // Move horizontally
+            foreach (var invader in aliveInvaders)
+            {
+                invader.Move(_invaderDirection * InvaderSpeed, 0);
             }
         }
     }

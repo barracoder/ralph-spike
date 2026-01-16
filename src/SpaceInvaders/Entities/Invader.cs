@@ -17,4 +17,10 @@ public class Invader
         X = x;
         Y = y;
     }
+
+    public void Move(float dx, float dy)
+    {
+        X += dx;
+        Y += dy;
+    }
 }
