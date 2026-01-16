@@ -71,3 +71,16 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - Prevent default on arrow keys to avoid page scrolling
   - KeyboardState class must have matching property names to JS object (Left/left case matters with default serialization)
 ---
+
+## 2026-01-16T00:33 - Story 5
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- Implemented player shooting with Bullet.cs entity
+- Spacebar fires white bullet upward, max 1 bullet at a time
+- Bullet moves at speed -8 (upward) and disappears when off screen
+- Added _spaceWasPressed flag to prevent continuous firing while holding space
+- Files changed: Entities/Bullet.cs, Components/GameCanvas.razor
+- **Learnings for future iterations:**
+  - Use key-down tracking (_spaceWasPressed) to detect single key press vs held
+  - Blazor JS interop deserialization is case-insensitive by default (left→Left works)
+  - Bullet speed negative for upward movement, positive for downward
+---

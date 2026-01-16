@@ -45,7 +45,7 @@
       "description": "Spacebar fires bullet upward. Max 1 player bullet on screen at a time. Bullet disappears when leaving canvas.",
       "acceptance_criteria": ["Spacebar fires bullet", "Bullet moves up", "Max 1 bullet enforced"],
       "verification_steps": ["Browser test firing"],
-      "passes": false
+      "passes": true
     },
     {
       "id": 6,
