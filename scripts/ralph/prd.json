@@ -18,7 +18,7 @@
       "description": "Create GameCanvas.razor with 800x600 HTML5 canvas using Blazor.Extensions.Canvas. Render solid background color.",
       "acceptance_criteria": ["Canvas renders at 800x600", "Background color visible"],
       "verification_steps": ["dotnet run", "Browser shows canvas"],
-      "passes": false
+      "passes": true
     },
     {
       "id": 3,

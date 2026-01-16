@@ -27,3 +27,16 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - Clean obj/bin before build if getting weird MSBuild errors
   - Port is configured in Properties/launchSettings.json (5041 by default)
 ---
+
+## 2026-01-16T00:25 - Story 2
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- Created GameCanvas.razor with 800x600 HTML5 canvas using Blazor.Extensions.Canvas
+- Renders black background color with green border
+- Added canvas JS interop script to index.html
+- Updated Home.razor to display GameCanvas component
+- Files changed: Components/GameCanvas.razor, Components/GameCanvas.razor.css, Pages/Home.razor, _Imports.razor, wwwroot/index.html
+- **Learnings for future iterations:**
+  - Blazor.Extensions.Canvas requires adding `_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js` to index.html
+  - Use BECanvas component with Width/Height props, then CreateCanvas2DAsync() for 2D context
+  - Components directory needs to be created manually and added to _Imports.razor
+---
