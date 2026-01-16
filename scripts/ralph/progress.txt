@@ -96,3 +96,16 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - Use List<Invader> with IsAlive property for future destruction
   - Grid initialization should happen after canvas context is ready
 ---
+
+## 2026-01-16T00:39 - Story 7
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- Implemented invader movement: all invaders move horizontally together
+- Edge detection reverses direction and drops invaders down one row
+- Added Move() method to Invader.cs for position updates
+- Files changed: Entities/Invader.cs, Components/GameCanvas.razor
+- **Learnings for future iterations:**
+  - Use LINQ .Where(i => i.IsAlive) to filter active invaders for movement
+  - Check all alive invaders for edge collision before moving any
+  - Separate drop logic from horizontal move (drop first, then reverse)
+  - InvaderSpeed 1.5f and DropAmount 20f work well at 60fps
+---

@@ -63,7 +63,7 @@
       "description": "Invaders move horizontally together. When edge reached, reverse direction and drop down one row.",
       "acceptance_criteria": ["Invaders move in unison", "Reverse at edges", "Drop down when reversing"],
       "verification_steps": ["Browser visual test"],
-      "passes": false
+      "passes": true
     },
     {
       "id": 8,
