@@ -26,8 +26,6 @@ Only add **general, reusable** patterns—not story-specific details.
 ```markdown
 ## [Date/Time] - [Story ID]
 
-Thread: https://ampcode.com/threads/{thread-id}
-
 - What was implemented
 - Files changed
 - **Learnings for future iterations:**
@@ -41,6 +39,5 @@ Thread: https://ampcode.com/threads/{thread-id}
 **Rules:**
 
 - Never replace content—always append
-- Include thread URL for future `read_thread` reference
 - Move repeated learnings up to Codebase Patterns section
 - Log verification failures with iteration number: `[iter 2] TypeError: ...`
