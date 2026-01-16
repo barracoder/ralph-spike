@@ -90,7 +90,7 @@
       "description": "Create 4 destructible shields between player and invaders. Shields degrade when hit by any bullet.",
       "acceptance_criteria": ["4 shields render", "Degrade on bullet impact"],
       "verification_steps": ["Browser test shooting shields"],
-      "passes": false
+      "passes": true
     },
     {
       "id": 11,

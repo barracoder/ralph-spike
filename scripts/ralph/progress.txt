@@ -136,3 +136,17 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - Gotchas encountered: Ensure collision checks run after position updates for bullets and invaders to avoid missed collisions.
   - Useful context: _lives field added to GameCanvas for tracking player health; GameState and ScoreDisplay should be integrated in later stories.
 ---
+
+## 2026-01-16T00:51:30.145Z - 10
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- What was implemented
+  - Added Shield entity and integrated destructible shields into GameCanvas; shields absorb bullets and degrade on impact.
+- Files changed
+  - src/SpaceInvaders/Entities/Shield.cs
+  - src/SpaceInvaders/Components/GameCanvas.razor
+  - scripts/ralph/prd.json
+- **Learnings for future iterations:**
+  - Patterns discovered: Place shields as entities with HP; check shield collisions before invaders/player so they absorb bullets first.
+  - Gotchas encountered: Removing bullets while iterating requires reverse loops or collection copies; render order matters.
+  - Useful context: Shields default to 3 HP and are placed evenly between player and invaders.
+---

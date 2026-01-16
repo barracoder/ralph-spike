@@ -19,10 +19,12 @@
     private bool _spaceWasPressed;
     private List<Invader> _invaders = new();
     private List<Bullet> _enemyBullets = new();
+    private List<Shield> _shields = new();
     private Random _random = new();
     private int _invaderShootTimer = 0;
     private int _lives = 3;
     private const int InvaderShootInterval = 90; // Fire every ~1.5 seconds at 60fps
+    private const float CanvasHeight = 600;
 
     private const int InvaderRows = 5;
     private const int InvaderColumns = 11;
@@ -45,6 +47,7 @@
             _context = await _canvasRef.CreateCanvas2DAsync();
             await JSRuntime.InvokeVoidAsync("keyboard.init");
             InitializeInvaders();
+            InitializeShields();
             await StartGameLoop();
         }
     }
@@ -60,6 +63,20 @@
                 float y = InvaderStartY + (row * InvaderSpacingY);
                 _invaders.Add(new Invader(row, col, x, y));
             }
+        }
+    }
+
+    private void InitializeShields()
+    {
+        _shields.Clear();
+        // Place 4 shields evenly spaced between player and invaders
+        float shieldY = CanvasHeight - 150;
+        int shieldCount = 4;
+        float spacing = (CanvasWidth - 80 * shieldCount) / (shieldCount + 1);
+        for (int i = 0; i < shieldCount; i++)
+        {
+            float x = spacing + i * (80 + spacing);
+            _shields.Add(new Shield(x, shieldY, 80, 40, 3));
         }
     }
 
@@ -109,25 +126,56 @@
         // Update enemy bullets
         UpdateEnemyBullets();
 
-        // Collision detection: player bullet vs invaders
+        // Collision detection: player bullet vs shields and invaders
         if (_playerBullet != null)
         {
-            foreach (var invader in _invaders.Where(i => i.IsAlive).ToList())
+            // Check shields first (shields absorb bullets)
+            foreach (var shield in _shields.Where(s => s.IsAlive).ToList())
             {
                 if (RectsIntersect(_playerBullet.X, _playerBullet.Y, _playerBullet.Width, _playerBullet.Height,
-                                   invader.X, invader.Y, invader.Width, invader.Height))
+                                   shield.X, shield.Y, shield.Width, shield.Height))
                 {
-                    invader.IsAlive = false;
+                    shield.TakeDamage(1);
                     _playerBullet = null;
                     break;
                 }
             }
+
+            // If bullet still exists, check invaders
+            if (_playerBullet != null)
+            {
+                foreach (var invader in _invaders.Where(i => i.IsAlive).ToList())
+                {
+                    if (RectsIntersect(_playerBullet.X, _playerBullet.Y, _playerBullet.Width, _playerBullet.Height,
+                                       invader.X, invader.Y, invader.Width, invader.Height))
+                    {
+                        invader.IsAlive = false;
+                        _playerBullet = null;
+                        break;
+                    }
+                }
+            }
         }
 
-        // Collision detection: enemy bullets vs player
+        // Collision detection: enemy bullets vs shields and player
         for (int i = _enemyBullets.Count - 1; i >= 0; i--)
         {
             var b = _enemyBullets[i];
+
+            // Check shields first
+            bool absorbed = false;
+            foreach (var shield in _shields.Where(s => s.IsAlive).ToList())
+            {
+                if (RectsIntersect(b.X, b.Y, b.Width, b.Height, shield.X, shield.Y, shield.Width, shield.Height))
+                {
+                    shield.TakeDamage(1);
+                    _enemyBullets.RemoveAt(i);
+                    absorbed = true;
+                    break;
+                }
+            }
+            if (absorbed) continue;
+
             if (RectsIntersect(b.X, b.Y, b.Width, b.Height, _player.X, _player.Y, _player.Width, _player.Height))
             {
                 _enemyBullets.RemoveAt(i);
@@ -237,6 +285,18 @@
         {
             await _context.SetFillStyleAsync("#FFFFFF");
             await _context.FillRectAsync(_playerBullet.X, _playerBullet.Y, _playerBullet.Width, _playerBullet.Height);
+        }
+
+        // Draw shields
+        foreach (var shield in _shields)
+        {
+            if (shield.IsAlive)
+            {
+                var alpha = shield.HealthFraction();
+                var fill = $"rgba(0,170,0,{alpha})";
+                await _context.SetFillStyleAsync(fill);
+                await _context.FillRectAsync(shield.X, shield.Y, shield.Width, shield.Height);
+            }
         }
 
         // Draw invaders (white rectangles)
