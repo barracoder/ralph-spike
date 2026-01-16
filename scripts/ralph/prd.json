@@ -1,0 +1,141 @@
+{
+  "branchName": "ralph/space-invaders",
+  "projectName": "Space Invaders",
+  "stories": [
+    {
+      "id": 1,
+      "category": "setup",
+      "title": "Project setup",
+      "description": "Create Blazor WebAssembly project with .NET 8. Add Blazor.Extensions.Canvas package.",
+      "acceptance_criteria": ["dotnet run starts dev server", "Browser loads default Blazor page"],
+      "verification_steps": ["dotnet build", "dotnet run"],
+      "passes": true
+    },
+    {
+      "id": 2,
+      "category": "core",
+      "title": "Canvas component",
+      "description": "Create GameCanvas.razor with 800x600 HTML5 canvas using Blazor.Extensions.Canvas. Render solid background color.",
+      "acceptance_criteria": ["Canvas renders at 800x600", "Background color visible"],
+      "verification_steps": ["dotnet run", "Browser shows canvas"],
+      "passes": false
+    },
+    {
+      "id": 3,
+      "category": "core",
+      "title": "Game loop",
+      "description": "Implement requestAnimationFrame loop via JS interop. Target 60fps. Clear and redraw canvas each frame.",
+      "acceptance_criteria": ["Game loop runs at ~60fps", "Canvas clears each frame"],
+      "verification_steps": ["Browser console shows no errors"],
+      "passes": false
+    },
+    {
+      "id": 4,
+      "category": "core",
+      "title": "Player entity",
+      "description": "Create Player.cs entity. Render green rectangle at bottom center. Move left/right with arrow keys or A/D. Stay within canvas bounds.",
+      "acceptance_criteria": ["Player renders as rectangle", "Moves with keyboard", "Cannot exit canvas"],
+      "verification_steps": ["Browser test keyboard controls"],
+      "passes": false
+    },
+    {
+      "id": 5,
+      "category": "core",
+      "title": "Player shooting",
+      "description": "Spacebar fires bullet upward. Max 1 player bullet on screen at a time. Bullet disappears when leaving canvas.",
+      "acceptance_criteria": ["Spacebar fires bullet", "Bullet moves up", "Max 1 bullet enforced"],
+      "verification_steps": ["Browser test firing"],
+      "passes": false
+    },
+    {
+      "id": 6,
+      "category": "core",
+      "title": "Invader grid",
+      "description": "Create Invader.cs entity. Render 5 rows x 11 columns (55 total) of invaders in formation at top of screen.",
+      "acceptance_criteria": ["55 invaders render", "Grid formation correct"],
+      "verification_steps": ["Visual verification in browser"],
+      "passes": false
+    },
+    {
+      "id": 7,
+      "category": "core",
+      "title": "Invader movement",
+      "description": "Invaders move horizontally together. When edge reached, reverse direction and drop down one row.",
+      "acceptance_criteria": ["Invaders move in unison", "Reverse at edges", "Drop down when reversing"],
+      "verification_steps": ["Browser visual test"],
+      "passes": false
+    },
+    {
+      "id": 8,
+      "category": "core",
+      "title": "Invader shooting",
+      "description": "Random bottom-row invader fires bullet downward periodically. Multiple enemy bullets allowed.",
+      "acceptance_criteria": ["Invaders fire periodically", "Bullets move down"],
+      "verification_steps": ["Browser visual test"],
+      "passes": false
+    },
+    {
+      "id": 9,
+      "category": "core",
+      "title": "Collision detection",
+      "description": "Implement CollisionDetection.cs. Player bullet hitting invader destroys both. Enemy bullet hitting player reduces lives.",
+      "acceptance_criteria": ["Bullets destroy invaders", "Player takes damage", "Entities removed on hit"],
+      "verification_steps": ["Unit tests for collision", "Browser gameplay test"],
+      "passes": false
+    },
+    {
+      "id": 10,
+      "category": "core",
+      "title": "Shields",
+      "description": "Create 4 destructible shields between player and invaders. Shields degrade when hit by any bullet.",
+      "acceptance_criteria": ["4 shields render", "Degrade on bullet impact"],
+      "verification_steps": ["Browser test shooting shields"],
+      "passes": false
+    },
+    {
+      "id": 11,
+      "category": "ui",
+      "title": "Score and lives display",
+      "description": "Create ScoreDisplay.razor. Show current score, high score, and remaining lives. Update in real-time.",
+      "acceptance_criteria": ["Score displays", "Lives display", "Updates on events"],
+      "verification_steps": ["Browser visual test"],
+      "passes": false
+    },
+    {
+      "id": 12,
+      "category": "core",
+      "title": "Game states",
+      "description": "Implement GameState.cs with Start, Playing, GameOver states. Create StartScreen.razor and GameOverScreen.razor.",
+      "acceptance_criteria": ["Start screen shows", "Game starts on input", "Game over when 0 lives"],
+      "verification_steps": ["Browser flow test"],
+      "passes": false
+    },
+    {
+      "id": 13,
+      "category": "core",
+      "title": "Wave progression",
+      "description": "When all invaders destroyed, start new wave. New wave has faster invaders. Track wave number.",
+      "acceptance_criteria": ["New wave spawns", "Speed increases", "Wave counter updates"],
+      "verification_steps": ["Complete wave in browser"],
+      "passes": false
+    },
+    {
+      "id": 14,
+      "category": "feature",
+      "title": "Mystery UFO",
+      "description": "Random UFO crosses top of screen periodically. Worth 50-300 random points when destroyed.",
+      "acceptance_criteria": ["UFO appears randomly", "Moves across top", "Awards random points"],
+      "verification_steps": ["Browser gameplay test"],
+      "passes": false
+    },
+    {
+      "id": 15,
+      "category": "polish",
+      "title": "Sound and animations",
+      "description": "Add AudioService.cs for sound effects (shoot, explosion, invader move). Add simple animations for explosions.",
+      "acceptance_criteria": ["Sounds play on events", "Explosion animation shows"],
+      "verification_steps": ["Browser with audio enabled"],
+      "passes": false
+    }
+  ]
+}
