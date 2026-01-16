@@ -18,6 +18,10 @@
     private Bullet? _playerBullet;
     private bool _spaceWasPressed;
     private List<Invader> _invaders = new();
+    private List<Bullet> _enemyBullets = new();
+    private Random _random = new();
+    private int _invaderShootTimer = 0;
+    private const int InvaderShootInterval = 90; // Fire every ~1.5 seconds at 60fps
 
     private const int InvaderRows = 5;
     private const int InvaderColumns = 11;
@@ -100,6 +104,51 @@
 
         // Update invader movement
         UpdateInvaders();
+
+        // Update enemy bullets
+        UpdateEnemyBullets();
+    }
+
+    private void UpdateEnemyBullets()
+    {
+        // Fire periodically from random bottom-row invader
+        _invaderShootTimer++;
+        if (_invaderShootTimer >= InvaderShootInterval)
+        {
+            _invaderShootTimer = 0;
+            FireFromRandomBottomInvader();
+        }
+
+        // Update existing enemy bullets
+        foreach (var bullet in _enemyBullets)
+        {
+            bullet.Update();
+        }
+
+        // Remove off-screen bullets
+        _enemyBullets.RemoveAll(b => b.IsOffScreen());
+    }
+
+    private void FireFromRandomBottomInvader()
+    {
+        var aliveInvaders = _invaders.Where(i => i.IsAlive).ToList();
+        if (aliveInvaders.Count == 0) return;
+
+        // Find bottom-row invaders for each column (highest Y value per column)
+        var bottomInvaders = aliveInvaders
+            .GroupBy(i => i.Column)
+            .Select(g => g.OrderByDescending(i => i.Y).First())
+            .ToList();
+
+        if (bottomInvaders.Count == 0) return;
+
+        // Select random bottom-row invader
+        var shooter = bottomInvaders[_random.Next(bottomInvaders.Count)];
+        
+        // Fire bullet from center bottom of invader
+        float bulletX = shooter.X + (shooter.Width / 2) - 2;
+        float bulletY = shooter.Y + shooter.Height;
+        _enemyBullets.Add(new Bullet(bulletX, bulletY, 5)); // Positive speed = downward
     }
 
     private void UpdateInvaders()
@@ -165,6 +214,13 @@
             {
                 await _context.FillRectAsync(invader.X, invader.Y, invader.Width, invader.Height);
             }
+        }
+
+        // Draw enemy bullets (red)
+        await _context.SetFillStyleAsync("#FF0000");
+        foreach (var bullet in _enemyBullets)
+        {
+            await _context.FillRectAsync(bullet.X, bullet.Y, bullet.Width, bullet.Height);
         }
     }
 

@@ -72,7 +72,7 @@
       "description": "Random bottom-row invader fires bullet downward periodically. Multiple enemy bullets allowed.",
       "acceptance_criteria": ["Invaders fire periodically", "Bullets move down"],
       "verification_steps": ["Browser visual test"],
-      "passes": false
+      "passes": true
     },
     {
       "id": 9,
