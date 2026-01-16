@@ -1,0 +1,30 @@
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
+
+<div class="game-container">
+    <BECanvas Width="800" Height="600" @ref="_canvasRef"></BECanvas>
+</div>
+
+@code {
+    private BECanvasComponent? _canvasRef;
+    private Canvas2DContext? _context;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _canvasRef != null)
+        {
+            _context = await _canvasRef.CreateCanvas2DAsync();
+            await RenderBackground();
+        }
+    }
+
+    private async Task RenderBackground()
+    {
+        if (_context == null) return;
+        
+        // Clear canvas with black background (classic space invaders look)
+        await _context.SetFillStyleAsync("#000000");
+        await _context.FillRectAsync(0, 0, 800, 600);
+    }
+}
