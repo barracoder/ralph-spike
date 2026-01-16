@@ -3,10 +3,19 @@
 @using Blazor.Extensions.Canvas.Canvas2D
 @using SpaceInvaders.Entities
 @inject IJSRuntime JSRuntime
+@inject GameStateService GameStateService
 @implements IAsyncDisposable
 
 <div class="game-container">
     <ScoreDisplay Score="_score" HighScore="_highScore" Lives="_lives" />
+    @if (GameStateService.Current == GameState.Start)
+    {
+        <StartScreen />
+    }
+    @if (GameStateService.Current == GameState.GameOver)
+    {
+        <GameOverScreen />
+    }
     <BECanvas Width="800" Height="600" @ref="_canvasRef"></BECanvas>
 </div>
 
@@ -102,6 +111,21 @@
     private async Task Update()
     {
         var keyState = await JSRuntime.InvokeAsync<KeyboardState>("keyboard.getState");
+
+        // Handle game state transitions
+        if (GameStateService.Current == GameState.Start)
+        {
+            if (keyState.Left || keyState.Right || keyState.Space)
+            {
+                GameStateService.StartGame();
+            }
+            return;
+        }
+        if (GameStateService.Current == GameState.GameOver)
+        {
+            return;
+        }
+
         _player.Update(keyState.Left, keyState.Right);
 
         // Handle shooting (only fire on key down, not held)
@@ -186,7 +210,10 @@
             {
                 _enemyBullets.RemoveAt(i);
                 _lives--;
-                // TODO: handle game over when _lives <= 0
+                if (_lives <= 0)
+                {
+                    GameStateService.SetGameOver();
+                }
             }
         }
     }
