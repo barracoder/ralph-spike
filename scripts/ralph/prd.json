@@ -9,7 +9,7 @@
       "description": "Create Blazor WebAssembly project with .NET 8. Add Blazor.Extensions.Canvas package.",
       "acceptance_criteria": ["dotnet run starts dev server", "Browser loads default Blazor page"],
       "verification_steps": ["dotnet build", "dotnet run"],
-      "passes": false
+      "passes": true
     },
     {
       "id": 2,

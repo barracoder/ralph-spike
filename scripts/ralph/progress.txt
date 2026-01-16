@@ -16,3 +16,14 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - PRD was initially a plain array - fixed to object with `branchName` at root per AGENTS.md gotcha
   - Current branch is `inital-setup` (note typo in branch name)
 ---
+
+## 2026-01-16T00:23 - Story 1
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- Created Blazor WebAssembly project with .NET 8 in src/SpaceInvaders
+- Added Blazor.Extensions.Canvas package (version 1.1.1)
+- Verified build and run work (dev server on localhost:5041)
+- **Learnings for future iterations:**
+  - Use `dotnet new blazorwasm -n NAME -f net8.0 -o OUTPUT --no-https` for simple wasm project
+  - Clean obj/bin before build if getting weird MSBuild errors
+  - Port is configured in Properties/launchSettings.json (5041 by default)
+---
