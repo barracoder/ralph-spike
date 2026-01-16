@@ -8,6 +8,7 @@ description: Generate/refine/validate structured PRDs → JSON tasks
 **Location:** `scripts/ralph/prd.json`
 
 **Format:** Object with `branchName` and `stories` array:
+
 ```json
 {
   "branchName": "ralph/feature-name",
@@ -27,6 +28,7 @@ description: Generate/refine/validate structured PRDs → JSON tasks
 ```
 
 **Rules:**
+
 - `branchName` required — ralph.sh uses it for branch tracking/archiving
 - Small tasks: 1-3 files changed max
 - Frontend → include "verify with dev-browser"

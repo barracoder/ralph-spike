@@ -1,20 +1,23 @@
-[
-  {
-    "id": 1,
-    "category": "setup",
-    "title": "Initialize README and basic structure",
-    "description": "Create README.md with project overview, install instructions, and running Ralph",
-    "acceptance_criteria": ["README exists", "Contains quickstart for Ralph"],
-    "verification_steps": ["cat README.md"],
-    "passes": false
-  },
-  {
-    "id": 2,
-    "category": "core",
-    "title": "Add hello world endpoint (example)",
-    "description": "Implement /hello endpoint that returns JSON {message: 'Hello from Ralph'}",
-    "acceptance_criteria": ["Endpoint works", "Tests pass"],
-    "verification_steps": ["curl localhost:3000/hello"],
-    "passes": false
-  }
-]
+{
+  "branchName": "inital-setup",
+  "stories": [
+    {
+      "id": 1,
+      "category": "setup",
+      "title": "Initialize README and basic structure",
+      "description": "Create README.md with project overview, install instructions, and running Ralph",
+      "acceptance_criteria": ["README exists", "Contains quickstart for Ralph"],
+      "verification_steps": ["cat README.md"],
+      "passes": true
+    },
+    {
+      "id": 2,
+      "category": "core",
+      "title": "Add hello world endpoint (example)",
+      "description": "Implement /hello endpoint that returns JSON {message: 'Hello from Ralph'}",
+      "acceptance_criteria": ["Endpoint works", "Tests pass"],
+      "verification_steps": ["curl localhost:3000/hello"],
+      "passes": false
+    }
+  ]
+}

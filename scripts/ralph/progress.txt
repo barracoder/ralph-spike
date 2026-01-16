@@ -1,0 +1,18 @@
+# Ralph Progress Log
+Started: Thu 15 Jan 2026 23:59:33 GMT
+---
+
+## Codebase Patterns
+- prd.json must be an object with `branchName` at root, not a plain array
+- prd.json lives in `scripts/ralph/prd.json`
+
+---
+
+## 2026-01-16T00:01 - Story 1
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- Implemented comprehensive README with project overview, install instructions, and Ralph quickstart
+- Files changed: README.md, scripts/ralph/prd.json (fixed structure)
+- **Learnings for future iterations:**
+  - PRD was initially a plain array - fixed to object with `branchName` at root per AGENTS.md gotcha
+  - Current branch is `inital-setup` (note typo in branch name)
+---
