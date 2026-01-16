@@ -5,13 +5,30 @@ description: Enforce test/type/lint gates before commits
 
 # back-pressure
 
-**Before any commit:**
+**Before any commit, run quality gates for your stack:**
 
-1. Run tests: `npm test` / `pytest` / `cargo test`
-2. Type check: `tsc --noEmit` / `pyright` / `mypy`
-3. Lint/format: fix or fail
-4. Frontend? → use dev-browser skill
+| Stack       | Build           | Test          | Lint                                |
+| ----------- | --------------- | ------------- | ----------------------------------- |
+| .NET/Blazor | `dotnet build`  | `dotnet test` | `dotnet format --verify-no-changes` |
+| Node.js     | `npm run build` | `npm test`    | `npm run lint`                      |
+| Python      | —               | `pytest`      | `ruff check .` or `flake8`          |
+| Rust        | `cargo build`   | `cargo test`  | `cargo clippy`                      |
 
-**On failure:** Fix and retry (max 3 attempts). If still failing → abandon branch, note in AGENTS.md.
+**Type checking:**
 
-Log all failures to progress.txt.
+- .NET: `dotnet build` (type errors are build errors)
+- TypeScript: `tsc --noEmit`
+- Python: `pyright` or `mypy`
+
+**Frontend verification:**
+
+- Use `dev-browser` skill to verify UI changes
+
+**On failure:**
+
+1. Fix the issue and retry
+2. Maximum 3 attempts per issue
+3. If still failing after 3 attempts → invoke `circuit-breaker` skill
+4. Log all failures to progress.txt with iteration number
+
+**Escalation:** If circuit-breaker triggers, abandon the current approach and note the blocker in AGENTS.md.
