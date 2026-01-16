@@ -17,6 +17,14 @@
     private Player _player = new();
     private Bullet? _playerBullet;
     private bool _spaceWasPressed;
+    private List<Invader> _invaders = new();
+
+    private const int InvaderRows = 5;
+    private const int InvaderColumns = 11;
+    private const float InvaderSpacingX = 50;
+    private const float InvaderSpacingY = 40;
+    private const float InvaderStartX = 60;
+    private const float InvaderStartY = 60;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -24,7 +32,22 @@
         {
             _context = await _canvasRef.CreateCanvas2DAsync();
             await JSRuntime.InvokeVoidAsync("keyboard.init");
+            InitializeInvaders();
             await StartGameLoop();
+        }
+    }
+
+    private void InitializeInvaders()
+    {
+        _invaders.Clear();
+        for (int row = 0; row < InvaderRows; row++)
+        {
+            for (int col = 0; col < InvaderColumns; col++)
+            {
+                float x = InvaderStartX + (col * InvaderSpacingX);
+                float y = InvaderStartY + (row * InvaderSpacingY);
+                _invaders.Add(new Invader(row, col, x, y));
+            }
         }
     }
 
@@ -86,6 +109,16 @@
         {
             await _context.SetFillStyleAsync("#FFFFFF");
             await _context.FillRectAsync(_playerBullet.X, _playerBullet.Y, _playerBullet.Width, _playerBullet.Height);
+        }
+
+        // Draw invaders (white rectangles)
+        await _context.SetFillStyleAsync("#FFFFFF");
+        foreach (var invader in _invaders)
+        {
+            if (invader.IsAlive)
+            {
+                await _context.FillRectAsync(invader.X, invader.Y, invader.Width, invader.Height);
+            }
         }
     }
 
