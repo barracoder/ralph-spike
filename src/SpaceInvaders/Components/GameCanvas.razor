@@ -1,6 +1,7 @@
 @using Blazor.Extensions
 @using Blazor.Extensions.Canvas
 @using Blazor.Extensions.Canvas.Canvas2D
+@using SpaceInvaders.Entities
 @inject IJSRuntime JSRuntime
 @implements IAsyncDisposable
 
@@ -13,12 +14,14 @@
     private Canvas2DContext? _context;
     private DotNetObjectReference<GameCanvas>? _dotNetRef;
     private bool _isRunning;
+    private Player _player = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && _canvasRef != null)
         {
             _context = await _canvasRef.CreateCanvas2DAsync();
+            await JSRuntime.InvokeVoidAsync("keyboard.init");
             await StartGameLoop();
         }
     }
@@ -34,7 +37,14 @@
     [JSInvokable]
     public async Task GameLoopTick()
     {
+        await Update();
         await Render();
+    }
+
+    private async Task Update()
+    {
+        var keyState = await JSRuntime.InvokeAsync<KeyboardState>("keyboard.getState");
+        _player.Update(keyState.Left, keyState.Right);
     }
 
     private async Task Render()
@@ -44,6 +54,10 @@
         // Clear canvas with black background each frame
         await _context.SetFillStyleAsync("#000000");
         await _context.FillRectAsync(0, 0, 800, 600);
+
+        // Draw player as green rectangle
+        await _context.SetFillStyleAsync("#00FF00");
+        await _context.FillRectAsync(_player.X, _player.Y, _player.Width, _player.Height);
     }
 
     public async ValueTask DisposeAsync()
@@ -54,5 +68,12 @@
             _isRunning = false;
         }
         _dotNetRef?.Dispose();
+    }
+
+    private class KeyboardState
+    {
+        public bool Left { get; set; }
+        public bool Right { get; set; }
+        public bool Space { get; set; }
     }
 }
