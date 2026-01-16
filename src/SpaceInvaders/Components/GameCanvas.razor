@@ -7,7 +7,7 @@
 @implements IAsyncDisposable
 
 <div class="game-container">
-    <ScoreDisplay Score="_score" HighScore="_highScore" Lives="_lives" />
+    <ScoreDisplay Score="_score" HighScore="_highScore" Lives="_lives" Wave="_wave" />
     @if (GameStateService.Current == GameState.Start)
     {
         <StartScreen />
@@ -47,10 +47,11 @@
 
     // Invader movement state
     private float _invaderDirection = 1; // 1 = right, -1 = left
-    private const float InvaderSpeed = 1.5f;
+    private float _invaderSpeed = 1.5f;
     private const float InvaderDropAmount = 20f;
     private const float CanvasWidth = 800;
     private const float CanvasPadding = 10;
+    private int _wave = 1;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -263,13 +264,17 @@
     private void UpdateInvaders()
     {
         var aliveInvaders = _invaders.Where(i => i.IsAlive).ToList();
-        if (aliveInvaders.Count == 0) return;
+        if (aliveInvaders.Count == 0)
+        {
+            StartNextWave();
+            return;
+        }
 
         // Check if any invader would hit edge after this move
         bool shouldReverse = false;
         foreach (var invader in aliveInvaders)
         {
-            float nextX = invader.X + (_invaderDirection * InvaderSpeed);
+            float nextX = invader.X + (_invaderDirection * _invaderSpeed);
             if (nextX <= CanvasPadding || nextX + invader.Width >= CanvasWidth - CanvasPadding)
             {
                 shouldReverse = true;
@@ -291,9 +296,18 @@
             // Move horizontally
             foreach (var invader in aliveInvaders)
             {
-                invader.Move(_invaderDirection * InvaderSpeed, 0);
+                invader.Move(_invaderDirection * _invaderSpeed, 0);
             }
         }
+    }
+
+    private void StartNextWave()
+    {
+        _wave++;
+        _invaderSpeed *= 1.2f;
+        InitializeInvaders();
+        _invaderDirection = 1;
+        _enemyBullets.Clear();
     }
 
     private bool RectsIntersect(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2)
