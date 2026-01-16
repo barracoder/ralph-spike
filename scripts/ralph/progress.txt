@@ -5,23 +5,7 @@ Started: Thu 15 Jan 2026 23:59:33 GMT
 ## Codebase Patterns
 - prd.json must be an object with `branchName` at root, not a plain array
 - prd.json lives in `scripts/ralph/prd.json`
-- SpaceInvaders dev server runs on http://localhost:5003 (configured in launchSettings.json)
 
----
-- Server starts on localhost:5003 with `dotnet run`
-
----
-
-## 2026-01-16T00:15 - Story 1 (Project setup)
-Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
-- Created Blazor WebAssembly project with .NET 8 using `dotnet new blazorwasm -n SpaceInvaders -f net8.0 --no-https`
-- Added Blazor.Extensions.Canvas package v1.1.1
-- Verified `dotnet build` succeeds and `dotnet run` starts dev server on http://localhost:5003
-- Files changed: SpaceInvaders/ (new Blazor WASM project with 19 files)
-- **Learnings for future iterations:**
-  - This branch (ralph/space-invaders) was created fresh from inital-setup branch
-  - Dev server uses port 5003 by default (configured in launchSettings.json)
-  - Use `dotnet new blazorwasm --no-https` to avoid HTTPS complexity for local dev
 ---
 
 ## 2026-01-16T00:01 - Story 1
