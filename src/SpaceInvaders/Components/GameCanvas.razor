@@ -31,6 +31,9 @@
     private List<Bullet> _enemyBullets = new();
     private List<Shield> _shields = new();
     private Random _random = new();
+    private Ufo? _ufo;
+    private int _ufoTimer = 0;
+    private const int UfoSpawnInterval = 600; // ~10 seconds at 60fps
     private int _invaderShootTimer = 0;
     private int _lives = 3;
     private int _score = 0;
@@ -155,6 +158,26 @@
         // Update enemy bullets
         UpdateEnemyBullets();
 
+        // Update UFO spawn/movement
+        _ufoTimer++;
+        if (_ufo == null)
+        {
+            if (_ufoTimer >= UfoSpawnInterval)
+            {
+                _ufoTimer = 0;
+                bool fromLeft = _random.Next(2) == 0;
+                float y = 40;
+                float x = fromLeft ? -40 : CanvasWidth;
+                float speed = fromLeft ? 2.5f : -2.5f;
+                _ufo = new Ufo(x, y, speed);
+            }
+        }
+        else
+        {
+            _ufo.Update();
+            if (_ufo.IsOffScreen()) _ufo = null;
+        }
+
         // Collision detection: player bullet vs shields and invaders
         if (_playerBullet != null)
         {
@@ -170,19 +193,36 @@
                 }
             }
 
-            // If bullet still exists, check invaders
+            // If bullet still exists, check UFO then invaders
             if (_playerBullet != null)
             {
-                foreach (var invader in _invaders.Where(i => i.IsAlive).ToList())
+                // Check UFO
+                if (_ufo != null)
                 {
                     if (RectsIntersect(_playerBullet.X, _playerBullet.Y, _playerBullet.Width, _playerBullet.Height,
-                                       invader.X, invader.Y, invader.Width, invader.Height))
+                                       _ufo.X, _ufo.Y, _ufo.Width, _ufo.Height))
                     {
-                        invader.IsAlive = false;
-                        _playerBullet = null;
-                        _score += 100;
+                        int points = _random.Next(50, 301); // 50-300 points
+                        _score += points;
                         if (_score > _highScore) _highScore = _score;
-                        break;
+                        _playerBullet = null;
+                        _ufo = null;
+                    }
+                }
+
+                if (_playerBullet != null)
+                {
+                    foreach (var invader in _invaders.Where(i => i.IsAlive).ToList())
+                    {
+                        if (RectsIntersect(_playerBullet.X, _playerBullet.Y, _playerBullet.Width, _playerBullet.Height,
+                                           invader.X, invader.Y, invader.Width, invader.Height))
+                        {
+                            invader.IsAlive = false;
+                            _playerBullet = null;
+                            _score += 100;
+                            if (_score > _highScore) _highScore = _score;
+                            break;
+                        }
                     }
                 }
             }
@@ -354,6 +394,13 @@
             {
                 await _context.FillRectAsync(invader.X, invader.Y, invader.Width, invader.Height);
             }
+        }
+
+        // Draw UFO (cyan)
+        if (_ufo != null)
+        {
+            await _context.SetFillStyleAsync("#00FFFF");
+            await _context.FillRectAsync(_ufo.X, _ufo.Y, _ufo.Width, _ufo.Height);
         }
 
         // Draw enemy bullets (red)

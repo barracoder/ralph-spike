@@ -126,7 +126,7 @@
       "description": "Random UFO crosses top of screen periodically. Worth 50-300 random points when destroyed.",
       "acceptance_criteria": ["UFO appears randomly", "Moves across top", "Awards random points"],
       "verification_steps": ["Browser gameplay test"],
-      "passes": false
+      "passes": true
     },
     {
       "id": 15,

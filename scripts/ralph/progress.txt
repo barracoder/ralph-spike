@@ -196,3 +196,13 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - Useful context: Wave counter exposed to ScoreDisplay for easy UI display.
 ---
 
+
+## 2026-01-16T01:05:40.801Z - Story 14
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- What was implemented
+  - Mystery UFO spawns periodically across the top of the screen, can be destroyed by the player bullet, and awards 50-300 random points when destroyed.
+- Files changed: src/SpaceInvaders/Entities/Ufo.cs, src/SpaceInvaders/Components/GameCanvas.razor, scripts/ralph/prd.json
+- **Learnings for future iterations:**
+  - UFOs spawn from left or right at a fixed top Y (40) using UfoSpawnInterval constant.
+  - Use Random.Next(50,301) to award 50-300 points.
+---
