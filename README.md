@@ -5,6 +5,7 @@ A template repository for autonomous AI coding workflows using the Ralph agent l
 ## What is Ralph?
 
 Ralph is an autonomous coding agent workflow that:
+
 - Reads a structured PRD (prd.json) with user stories
 - Implements one story per iteration
 - Runs quality gates (build, test, lint)
@@ -15,11 +16,8 @@ Ralph is an autonomous coding agent workflow that:
 
 ```bash
 # Clone as template for your project
-git clone https://github.com/markgreen/ralph-spike.git my-project
+git clone https://github.com/barracoder/ralph-spike.git my-project
 cd my-project
-
-# Install skills to ~/.github/skills (optional, for global use)
-./setup-ralph-skills.sh
 
 # Create your PRD
 # Edit scripts/PRD.md (human-readable) → scripts/ralph/prd.json (machine-readable)
@@ -35,35 +33,35 @@ cd my-project
 
 Modular behaviors that AI agents can load:
 
-| Skill | Purpose |
-|-------|---------|
-| `back-pressure` | Enforce build/test/lint gates before commits (.NET, Node, Python, Rust) |
-| `blazor-components` | Blazor-specific patterns: JS interop, state management, canvas |
-| `circuit-breaker` | Halt after repeated failures, log context for debugging |
-| `code-review` | Self-review checklist for quality/security |
-| `commit-convention` | `feat: [Story ID] - [Title]` format aligned with Ralph |
-| `dev-browser` | Playwright visual verification (Node, Python, Blazor) |
-| `prd` | PRD JSON schema with `priority`/`dependsOn` fields |
-| `pr-creator` | Auto-create PR with story summary after completion |
-| `progress-logger` | Maintain progress.txt with patterns and learnings |
-| `test-architect` | TDD patterns for xUnit/bUnit, vitest, pytest |
+| Skill               | Purpose                                                                 |
+| ------------------- | ----------------------------------------------------------------------- |
+| `back-pressure`     | Enforce build/test/lint gates before commits (.NET, Node, Python, Rust) |
+| `blazor-components` | Blazor-specific patterns: JS interop, state management, canvas          |
+| `circuit-breaker`   | Halt after repeated failures, log context for debugging                 |
+| `code-review`       | Self-review checklist for quality/security                              |
+| `commit-convention` | `feat: [Story ID] - [Title]` format aligned with Ralph                  |
+| `dev-browser`       | Playwright visual verification (Node, Python, Blazor)                   |
+| `prd`               | PRD JSON schema with `priority`/`dependsOn` fields                      |
+| `pr-creator`        | Auto-create PR with story summary after completion                      |
+| `progress-logger`   | Maintain progress.txt with patterns and learnings                       |
+| `test-architect`    | TDD patterns for xUnit/bUnit, vitest, pytest                            |
 
 ### Scripts (`scripts/ralph/`)
 
-| File | Purpose |
-|------|---------|
-| `ralph.sh` | Main loop for Amp agent |
-| `ralph-copilot.sh` | Main loop for GitHub Copilot CLI |
-| `prompt.md` | System prompt with agent instructions |
-| `prd.json` | Machine-readable stories (generated from PRD.md) |
-| `progress.txt` | Iteration log with learnings |
+| File               | Purpose                                          |
+| ------------------ | ------------------------------------------------ |
+| `ralph.sh`         | Main loop for Amp agent                          |
+| `ralph-copilot.sh` | Main loop for GitHub Copilot CLI                 |
+| `prompt.md`        | System prompt with agent instructions            |
+| `prd.json`         | Machine-readable stories (generated from PRD.md) |
+| `progress.txt`     | Iteration log with learnings                     |
 
 ### Configuration
 
-| File | Purpose |
-|------|---------|
-| `AGENTS.md` | Persistent learnings for all AI agents |
-| `scripts/PRD.md` | Human-readable requirements template |
+| File             | Purpose                                |
+| ---------------- | -------------------------------------- |
+| `AGENTS.md`      | Persistent learnings for all AI agents |
+| `scripts/PRD.md` | Human-readable requirements template   |
 
 ## Running Ralph
 

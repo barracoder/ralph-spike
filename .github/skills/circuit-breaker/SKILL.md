@@ -16,23 +16,28 @@ Activate circuit breaker if ANY of these occur:
 ## When Triggered
 
 **1. Output the halt signal:**
+
 ```
 <circuit_open>REPEATED_FAILURE</circuit_open>
 ```
 
 **2. Log to progress.txt:**
+
 ```markdown
 ## [Date/Time] - CIRCUIT BREAKER TRIGGERED
+
 Story: [Story ID] - [Story Title]
 Reason: [Brief description of the failure pattern]
 Last error: [The repeating error message]
 Attempts: [Number of iterations attempted]
 Files affected: [List of files being modified]
+
 ---
 ```
 
 **3. Update prd.json:**
 Add `"blocked": true` and `"blockReason": "..."` to the story:
+
 ```json
 {
   "id": 5,
@@ -47,6 +52,7 @@ Add `"blocked": true` and `"blockReason": "..."` to the story:
 ## Recovery (Manual)
 
 When a human investigates:
+
 1. Review the progress.txt entry for context
 2. Check the thread URL from previous iterations
 3. Fix the underlying issue

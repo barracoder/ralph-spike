@@ -15,17 +15,18 @@ description: Write high-coverage tests (TDD preferred)
 
 ## Framework Commands
 
-| Stack | Framework | Run | Coverage |
-|-------|-----------|-----|----------|
-| .NET | xUnit/NUnit | `dotnet test` | `dotnet test --collect:"XPlat Code Coverage"` |
-| Blazor | bUnit | `dotnet test` | Same as above |
-| Node.js | vitest/jest | `npm test` | `npm test -- --coverage` |
-| Python | pytest | `pytest` | `pytest --cov` |
-| Rust | cargo | `cargo test` | `cargo tarpaulin` |
+| Stack   | Framework   | Run           | Coverage                                      |
+| ------- | ----------- | ------------- | --------------------------------------------- |
+| .NET    | xUnit/NUnit | `dotnet test` | `dotnet test --collect:"XPlat Code Coverage"` |
+| Blazor  | bUnit       | `dotnet test` | Same as above                                 |
+| Node.js | vitest/jest | `npm test`    | `npm test -- --coverage`                      |
+| Python  | pytest      | `pytest`      | `pytest --cov`                                |
+| Rust    | cargo       | `cargo test`  | `cargo tarpaulin`                             |
 
 ## .NET/Blazor Testing Patterns
 
 **Unit test (xUnit):**
+
 ```csharp
 [Fact]
 public void Player_MovesWithinBounds()
@@ -37,6 +38,7 @@ public void Player_MovesWithinBounds()
 ```
 
 **Blazor component test (bUnit):**
+
 ```csharp
 [Fact]
 public void ScoreDisplay_ShowsCurrentScore()

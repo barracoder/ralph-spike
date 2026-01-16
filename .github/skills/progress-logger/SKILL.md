@@ -13,6 +13,7 @@ Consolidate reusable patterns that future iterations should know:
 
 ```markdown
 ## Codebase Patterns
+
 - Use `RectsIntersect` helper for collision detection
 - Call `InvokeAsync(StateHasChanged)` after canvas Render operations
 - Export types from actions.ts for UI components
@@ -24,13 +25,16 @@ Only add **general, reusable** patterns—not story-specific details.
 
 ```markdown
 ## [Date/Time] - [Story ID]
+
 Thread: https://ampcode.com/threads/{thread-id}
+
 - What was implemented
 - Files changed
 - **Learnings for future iterations:**
   - Patterns discovered
   - Gotchas encountered
   - Useful context
+
 ---
 ```
 

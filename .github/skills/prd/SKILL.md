@@ -33,17 +33,17 @@ description: Generate/refine/validate structured PRDs → JSON tasks
 
 ## Field Reference
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `branchName` | **Yes** | Git branch name; ralph.sh uses for tracking/archiving |
-| `stories` | **Yes** | Array of user stories |
-| `id` | **Yes** | Unique integer identifier |
-| `priority` | Recommended | Lower number = higher priority (1 is highest) |
-| `dependsOn` | Recommended | Array of story IDs that must complete first |
-| `category` | Recommended | Grouping: setup, core, ui, feature, polish |
-| `passes` | **Yes** | Boolean; only set `true` after verification passes |
-| `blocked` | Optional | Set by circuit-breaker when story cannot proceed |
-| `blockReason` | Optional | Explanation of why story is blocked |
+| Field         | Required    | Description                                           |
+| ------------- | ----------- | ----------------------------------------------------- |
+| `branchName`  | **Yes**     | Git branch name; ralph.sh uses for tracking/archiving |
+| `stories`     | **Yes**     | Array of user stories                                 |
+| `id`          | **Yes**     | Unique integer identifier                             |
+| `priority`    | Recommended | Lower number = higher priority (1 is highest)         |
+| `dependsOn`   | Recommended | Array of story IDs that must complete first           |
+| `category`    | Recommended | Grouping: setup, core, ui, feature, polish            |
+| `passes`      | **Yes**     | Boolean; only set `true` after verification passes    |
+| `blocked`     | Optional    | Set by circuit-breaker when story cannot proceed      |
+| `blockReason` | Optional    | Explanation of why story is blocked                   |
 
 ## Story Selection Rules
 

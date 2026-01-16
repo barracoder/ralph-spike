@@ -10,12 +10,14 @@ Patterns for building Blazor WebAssembly components effectively.
 ## JS Interop
 
 **Invoking JavaScript from C#:**
+
 ```csharp
 await JSRuntime.InvokeVoidAsync("functionName", arg1, arg2);
 var result = await JSRuntime.InvokeAsync<string>("functionName", arg1);
 ```
 
 **Receiving calls from JavaScript:**
+
 ```csharp
 private DotNetObjectReference<MyComponent>? _dotNetRef;
 
@@ -35,6 +37,7 @@ public void OnJsCallback(string data)
 ## Disposal Pattern
 
 **Always implement `IAsyncDisposable` for JS interop components:**
+
 ```csharp
 @implements IAsyncDisposable
 
@@ -55,6 +58,7 @@ public void OnJsCallback(string data)
 ## State Management
 
 **UI updates after async/JS operations:**
+
 ```csharp
 // From JS callback or async operation - must use InvokeAsync
 await InvokeAsync(StateHasChanged);
@@ -64,6 +68,7 @@ StateHasChanged();
 ```
 
 **Shared state via DI service:**
+
 ```csharp
 // Services/GameState.cs
 public class GameState
@@ -88,6 +93,7 @@ public void Dispose() => State.OnChange -= StateHasChanged;
 ## Canvas Rendering
 
 **Use Blazor.Extensions.Canvas for 2D graphics:**
+
 ```csharp
 @using Blazor.Extensions
 @using Blazor.Extensions.Canvas.Canvas2D
@@ -118,6 +124,7 @@ public void Dispose() => State.OnChange -= StateHasChanged;
 ## Collision Detection
 
 **Axis-aligned bounding box (AABB) helper:**
+
 ```csharp
 private static bool RectsIntersect(
     double x1, double y1, double w1, double h1,
@@ -131,20 +138,21 @@ private static bool RectsIntersect(
 ## Game Loop Pattern
 
 **requestAnimationFrame via JS interop:**
+
 ```javascript
 // wwwroot/js/gameLoop.js
 let animationId = null;
 
 window.startGameLoop = (dotNetRef) => {
-    const loop = (timestamp) => {
-        dotNetRef.invokeMethodAsync('OnFrame', timestamp);
-        animationId = requestAnimationFrame(loop);
-    };
+  const loop = (timestamp) => {
+    dotNetRef.invokeMethodAsync("OnFrame", timestamp);
     animationId = requestAnimationFrame(loop);
+  };
+  animationId = requestAnimationFrame(loop);
 };
 
 window.stopGameLoop = () => {
-    if (animationId) cancelAnimationFrame(animationId);
+  if (animationId) cancelAnimationFrame(animationId);
 };
 ```
 

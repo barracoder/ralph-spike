@@ -71,6 +71,7 @@ npm ls playwright &>/dev/null || (npm install -D playwright @playwright/test && 
 ```
 
 **Blazor dev server:**
+
 ```bash
 # Start Blazor dev server (default port 5041 or check launchSettings.json)
 dotnet watch run --project src/SpaceInvaders &
@@ -78,23 +79,24 @@ sleep 5  # Blazor WASM takes longer to compile
 ```
 
 **Verification script for Blazor:**
+
 ```javascript
 // verify-blazor.mjs
-import { chromium } from 'playwright';
+import { chromium } from "playwright";
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5041';
+const BASE_URL = process.env.BASE_URL || "http://localhost:5041";
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Blazor WASM needs time to load
-await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 60000 });
+await page.goto(BASE_URL, { waitUntil: "networkidle", timeout: 60000 });
 
 // Wait for Blazor to initialize (loading screen disappears)
-await page.waitForSelector('#app:not(:has(.loading))', { timeout: 30000 });
+await page.waitForSelector("#app:not(:has(.loading))", { timeout: 30000 });
 
-await page.screenshot({ path: 'blazor-screenshot.png', fullPage: true });
-console.log('✓ Blazor app verified');
+await page.screenshot({ path: "blazor-screenshot.png", fullPage: true });
+console.log("✓ Blazor app verified");
 
 await browser.close();
 ```

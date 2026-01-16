@@ -14,6 +14,7 @@ Invoke this skill after outputting `<promise>COMPLETE</promise>` to create a PR 
 ## PR Creation
 
 **Using GitHub CLI:**
+
 ```bash
 # Ensure you're on the feature branch
 BRANCH=$(git branch --show-current)
@@ -76,12 +77,15 @@ If `gh` CLI is unavailable, output this for the user:
 [Paste summary from progress.txt Codebase Patterns section]
 
 **Stories completed:**
+
 - List each story with `passes: true`
 
 **Files changed:**
+
 - Key files modified across all stories
 
 **Testing:**
+
 - How to verify the implementation works
 ```
 
@@ -111,9 +115,9 @@ After PR is created:
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| `gh` not authenticated | Run `gh auth login` |
-| No upstream branch | Script includes `git push -u origin` |
-| jq not installed | Use manual PR template |
-| Branch protection | PR will be created but may need approval |
+| Issue                  | Solution                                 |
+| ---------------------- | ---------------------------------------- |
+| `gh` not authenticated | Run `gh auth login`                      |
+| No upstream branch     | Script includes `git push -u origin`     |
+| jq not installed       | Use manual PR template                   |
+| Branch protection      | PR will be created but may need approval |
