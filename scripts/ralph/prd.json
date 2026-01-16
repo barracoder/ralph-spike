@@ -27,7 +27,7 @@
       "description": "Implement requestAnimationFrame loop via JS interop. Target 60fps. Clear and redraw canvas each frame.",
       "acceptance_criteria": ["Game loop runs at ~60fps", "Canvas clears each frame"],
       "verification_steps": ["Browser console shows no errors"],
-      "passes": false
+      "passes": true
     },
     {
       "id": 4,

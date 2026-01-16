@@ -5,6 +5,8 @@ Started: Thu 15 Jan 2026 23:59:33 GMT
 ## Codebase Patterns
 - prd.json must be an object with `branchName` at root, not a plain array
 - prd.json lives in `scripts/ralph/prd.json`
+- Use DotNetObjectReference + [JSInvokable] for JS-to-C# callbacks in Blazor
+- Implement IAsyncDisposable to clean up JS interop resources
 
 ---
 
@@ -39,4 +41,18 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - Blazor.Extensions.Canvas requires adding `_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js` to index.html
   - Use BECanvas component with Width/Height props, then CreateCanvas2DAsync() for 2D context
   - Components directory needs to be created manually and added to _Imports.razor
+---
+
+## 2026-01-16T00:27 - Story 3
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- Implemented requestAnimationFrame game loop via JS interop
+- Created wwwroot/js/gameLoop.js with start/stop/tick functions
+- Updated GameCanvas.razor with JSRuntime injection, DotNetObjectReference, and IAsyncDisposable
+- Canvas clears and redraws each frame at ~60fps
+- Files changed: Components/GameCanvas.razor, wwwroot/index.html, wwwroot/js/gameLoop.js
+- **Learnings for future iterations:**
+  - Use DotNetObjectReference<T> to pass C# instance to JS for callbacks
+  - Mark callback methods with [JSInvokable] attribute
+  - Implement IAsyncDisposable to clean up JS resources and prevent memory leaks
+  - requestAnimationFrame returns an ID needed for cancelAnimationFrame
 ---
