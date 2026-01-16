@@ -61,6 +61,46 @@ npm ls playwright &>/dev/null || (npm install -D playwright @playwright/test && 
 python -c "import playwright" 2>/dev/null || (pip install playwright && playwright install chromium)
 ```
 
+### .NET/Blazor Projects
+
+For Blazor WebAssembly projects, use the existing Node.js Playwright setup (Playwright runs in Node regardless of backend):
+
+```bash
+# Install Playwright in the project (if package.json exists)
+npm ls playwright &>/dev/null || (npm install -D playwright @playwright/test && npx playwright install chromium)
+```
+
+**Blazor dev server:**
+```bash
+# Start Blazor dev server (default port 5041 or check launchSettings.json)
+dotnet watch run --project src/SpaceInvaders &
+sleep 5  # Blazor WASM takes longer to compile
+```
+
+**Verification script for Blazor:**
+```javascript
+// verify-blazor.mjs
+import { chromium } from 'playwright';
+
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5041';
+
+const browser = await chromium.launch();
+const page = await browser.newPage();
+
+// Blazor WASM needs time to load
+await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 60000 });
+
+// Wait for Blazor to initialize (loading screen disappears)
+await page.waitForSelector('#app:not(:has(.loading))', { timeout: 30000 });
+
+await page.screenshot({ path: 'blazor-screenshot.png', fullPage: true });
+console.log('✓ Blazor app verified');
+
+await browser.close();
+```
+
+**Note:** Blazor WASM apps have longer initial load times due to .NET runtime download. Use `networkidle` and generous timeouts.
+
 ## Core Instructions
 
 ### Quick Visual Verification
