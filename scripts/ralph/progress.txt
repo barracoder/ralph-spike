@@ -84,3 +84,15 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - Blazor JS interop deserialization is case-insensitive by default (left→Left works)
   - Bullet speed negative for upward movement, positive for downward
 ---
+
+## 2026-01-16T00:36 - Story 6
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- Created Invader.cs entity with position, size, row/column tracking
+- Created 5x11 grid (55 invaders) in GameCanvas.razor
+- Invaders render as white rectangles in formation at top of screen
+- Files changed: Entities/Invader.cs, Components/GameCanvas.razor
+- **Learnings for future iterations:**
+  - Invader spacing: 50px horizontal, 40px vertical, starting at (60, 60)
+  - Use List<Invader> with IsAlive property for future destruction
+  - Grid initialization should happen after canvas context is ready
+---
