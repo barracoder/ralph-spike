@@ -206,3 +206,12 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - UFOs spawn from left or right at a fixed top Y (40) using UfoSpawnInterval constant.
   - Use Random.Next(50,301) to award 50-300 points.
 ---
+## 2026-01-16T01:08:54Z - Story 15
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- Implemented AudioService + simple WebAudio beeps and wired to game events (shoot, explosion, damage).
+- Files changed: src/SpaceInvaders/AudioService.cs, src/SpaceInvaders/wwwroot/js/audio.js, src/SpaceInvaders/Components/GameCanvas.razor, src/SpaceInvaders/Program.cs, src/SpaceInvaders/wwwroot/index.html, scripts/ralph/prd.json
+- **Learnings for future iterations:**
+  - Use WebAudio API for lightweight sound effects without assets.
+  - Register services in Program.cs and inject fully-qualified service when not in _Imports.
+  - Prefer using AudioService for all sound playback to centralize behavior; audio.js uses oscillator beeps.
+---
