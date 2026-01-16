@@ -14,3 +14,4 @@
 - prd.json must be an object with `branchName` at root, not a plain array — ralph.sh reads `.branchName` for branch tracking
 - prd.json lives in `scripts/ralph/prd.json`, not project root
 - Use `${var,,}` lowercase syntax only in Bash 4+ — macOS ships Bash 3.2, use `tr` instead
+- Use axis-aligned bounding box (RectsIntersect) helper in Components/GameCanvas for simple collision detection between entities

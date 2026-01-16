@@ -21,6 +21,7 @@
     private List<Bullet> _enemyBullets = new();
     private Random _random = new();
     private int _invaderShootTimer = 0;
+    private int _lives = 3;
     private const int InvaderShootInterval = 90; // Fire every ~1.5 seconds at 60fps
 
     private const int InvaderRows = 5;
@@ -107,6 +108,33 @@
 
         // Update enemy bullets
         UpdateEnemyBullets();
+
+        // Collision detection: player bullet vs invaders
+        if (_playerBullet != null)
+        {
+            foreach (var invader in _invaders.Where(i => i.IsAlive).ToList())
+            {
+                if (RectsIntersect(_playerBullet.X, _playerBullet.Y, _playerBullet.Width, _playerBullet.Height,
+                                   invader.X, invader.Y, invader.Width, invader.Height))
+                {
+                    invader.IsAlive = false;
+                    _playerBullet = null;
+                    break;
+                }
+            }
+        }
+
+        // Collision detection: enemy bullets vs player
+        for (int i = _enemyBullets.Count - 1; i >= 0; i--)
+        {
+            var b = _enemyBullets[i];
+            if (RectsIntersect(b.X, b.Y, b.Width, b.Height, _player.X, _player.Y, _player.Width, _player.Height))
+            {
+                _enemyBullets.RemoveAt(i);
+                _lives--;
+                // TODO: handle game over when _lives <= 0
+            }
+        }
     }
 
     private void UpdateEnemyBullets()
@@ -185,6 +213,11 @@
                 invader.Move(_invaderDirection * InvaderSpeed, 0);
             }
         }
+    }
+
+    private bool RectsIntersect(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2)
+    {
+        return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
     }
 
     private async Task Render()

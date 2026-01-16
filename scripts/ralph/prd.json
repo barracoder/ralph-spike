@@ -81,7 +81,7 @@
       "description": "Implement CollisionDetection.cs. Player bullet hitting invader destroys both. Enemy bullet hitting player reduces lives.",
       "acceptance_criteria": ["Bullets destroy invaders", "Player takes damage", "Entities removed on hit"],
       "verification_steps": ["Unit tests for collision", "Browser gameplay test"],
-      "passes": false
+      "passes": true
     },
     {
       "id": 10,

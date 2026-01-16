@@ -7,6 +7,7 @@ Started: Thu 15 Jan 2026 23:59:33 GMT
 - prd.json lives in `scripts/ralph/prd.json`
 - Use DotNetObjectReference + [JSInvokable] for JS-to-C# callbacks in Blazor
 - Implement IAsyncDisposable to clean up JS interop resources
+- Use axis-aligned bounding box (RectsIntersect) helper for simple collision detection between entities
 
 ---
 
@@ -120,4 +121,18 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
 - **Learnings for future iterations:**
   - Bottom-row invader selection groups by column; use highest Y per column to pick shooter.
   - Bullet.Speed > 0 moves downward; use positive speed for enemy bullets and negative for player bullets.
+---
+## 2026-01-16T00:47:22.625Z - 9
+Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
+- What was implemented
+  - Implemented collision detection: player bullets destroy invaders; enemy bullets damage player and reduce lives.
+- Files changed
+  - src/SpaceInvaders/Components/GameCanvas.razor
+  - scripts/ralph/prd.json
+  - scripts/ralph/progress.txt
+  - AGENTS.md
+- **Learnings for future iterations:**
+  - Patterns discovered: Use axis-aligned bounding box (RectsIntersect) for simple collision detection between rectangular entities.
+  - Gotchas encountered: Ensure collision checks run after position updates for bullets and invaders to avoid missed collisions.
+  - Useful context: _lives field added to GameCanvas for tracking player health; GameState and ScoreDisplay should be integrated in later stories.
 ---
