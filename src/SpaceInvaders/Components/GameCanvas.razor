@@ -4,6 +4,7 @@
 @using SpaceInvaders.Entities
 @inject IJSRuntime JSRuntime
 @inject GameStateService GameStateService
+@inject SpaceInvaders.Services.AudioService AudioService
 @implements IAsyncDisposable
 
 <div class="game-container">
@@ -139,6 +140,7 @@
             float bulletX = _player.X + (_player.Width / 2) - 2; // Center bullet (width 4)
             float bulletY = _player.Y - 10; // Above player
             _playerBullet = new Bullet(bulletX, bulletY);
+            await AudioService.PlayShootAsync();
         }
         _spaceWasPressed = keyState.Space;
 
@@ -221,6 +223,7 @@
                             _playerBullet = null;
                             _score += 100;
                             if (_score > _highScore) _highScore = _score;
+                            await AudioService.PlayExplosionAsync();
                             break;
                         }
                     }
@@ -240,6 +243,7 @@
                 if (RectsIntersect(b.X, b.Y, b.Width, b.Height, shield.X, shield.Y, shield.Width, shield.Height))
                 {
                     shield.TakeDamage(1);
+                    await AudioService.PlayDamageAsync();
                     _enemyBullets.RemoveAt(i);
                     absorbed = true;
                     break;
@@ -251,6 +255,7 @@
             {
                 _enemyBullets.RemoveAt(i);
                 _lives--;
+                await AudioService.PlayDamageAsync();
                 if (_lives <= 0)
                 {
                     GameStateService.SetGameOver();
