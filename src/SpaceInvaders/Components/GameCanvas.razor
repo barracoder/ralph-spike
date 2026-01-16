@@ -1,6 +1,8 @@
 @using Blazor.Extensions
 @using Blazor.Extensions.Canvas
 @using Blazor.Extensions.Canvas.Canvas2D
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
 
 <div class="game-container">
     <BECanvas Width="800" Height="600" @ref="_canvasRef"></BECanvas>
@@ -9,22 +11,48 @@
 @code {
     private BECanvasComponent? _canvasRef;
     private Canvas2DContext? _context;
+    private DotNetObjectReference<GameCanvas>? _dotNetRef;
+    private bool _isRunning;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && _canvasRef != null)
         {
             _context = await _canvasRef.CreateCanvas2DAsync();
-            await RenderBackground();
+            await StartGameLoop();
         }
     }
 
-    private async Task RenderBackground()
+    private async Task StartGameLoop()
+    {
+        if (_isRunning) return;
+        _isRunning = true;
+        _dotNetRef = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("gameLoop.start", _dotNetRef);
+    }
+
+    [JSInvokable]
+    public async Task GameLoopTick()
+    {
+        await Render();
+    }
+
+    private async Task Render()
     {
         if (_context == null) return;
         
-        // Clear canvas with black background (classic space invaders look)
+        // Clear canvas with black background each frame
         await _context.SetFillStyleAsync("#000000");
         await _context.FillRectAsync(0, 0, 800, 600);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_isRunning)
+        {
+            await JSRuntime.InvokeVoidAsync("gameLoop.stop");
+            _isRunning = false;
+        }
+        _dotNetRef?.Dispose();
     }
 }
