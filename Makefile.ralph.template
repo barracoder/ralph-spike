@@ -1,0 +1,190 @@
+# Ralph Automation Makefile
+# Convenience commands for running Ralph
+#
+# To use:
+# 1. Copy this file to Makefile.ralph in your project root (remove .template extension)
+# 2. Include it in your main Makefile with: include Makefile.ralph
+# 3. Or use directly: make -f Makefile.ralph ralph
+
+# Configuration (override with environment variables)
+ITERATIONS ?= 10
+MODEL ?= gpt-5.1-codex
+AGENT ?= copilot
+
+# Directories
+RALPH_DIR = ralph/scripts/ralph
+PRD_FILE = scripts/ralph/prd.json
+PROGRESS_FILE = scripts/ralph/progress.txt
+
+# Colors for output
+BLUE := \033[0;34m
+GREEN := \033[0;32m
+YELLOW := \033[1;33m
+NC := \033[0m # No Color
+
+.PHONY: help
+help: ## Show this help message
+	@echo "$(BLUE)Ralph Automation Makefile$(NC)"
+	@echo ""
+	@echo "$(GREEN)Available targets:$(NC)"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(YELLOW)%-20s$(NC) %s\n", $$1, $$2}'
+	@echo ""
+	@echo "$(GREEN)Configuration:$(NC)"
+	@echo "  ITERATIONS=$(ITERATIONS)  - Max iterations for Ralph"
+	@echo "  MODEL=$(MODEL)  - AI model to use"
+	@echo "  AGENT=$(AGENT)  - Agent type (copilot or amp)"
+	@echo ""
+	@echo "$(GREEN)Examples:$(NC)"
+	@echo "  make ralph                    # Run with defaults"
+	@echo "  make ralph ITERATIONS=20      # Run 20 iterations"
+	@echo "  make ralph-amp                # Run with Amp"
+	@echo "  make ralph-docker             # Run in Docker"
+
+.PHONY: ralph
+ralph: ## Run Ralph with GitHub Copilot (local)
+	@echo "$(BLUE)Running Ralph Copilot ($(ITERATIONS) iterations, model: $(MODEL))$(NC)"
+	@if [ ! -f "$(RALPH_DIR)/ralph-copilot.sh" ]; then \
+		echo "$(YELLOW)Error: Ralph not found. Run 'make ralph-setup' first$(NC)"; \
+		exit 1; \
+	fi
+	chmod +x $(RALPH_DIR)/ralph-copilot.sh
+	./$(RALPH_DIR)/ralph-copilot.sh $(ITERATIONS) $(MODEL)
+
+.PHONY: ralph-amp
+ralph-amp: ## Run Ralph with Amp (local)
+	@echo "$(BLUE)Running Ralph Amp ($(ITERATIONS) iterations)$(NC)"
+	@if [ ! -f "$(RALPH_DIR)/ralph.sh" ]; then \
+		echo "$(YELLOW)Error: Ralph not found. Run 'make ralph-setup' first$(NC)"; \
+		exit 1; \
+	fi
+	chmod +x $(RALPH_DIR)/ralph.sh
+	./$(RALPH_DIR)/ralph.sh $(ITERATIONS)
+
+.PHONY: ralph-docker
+ralph-docker: ## Run Ralph with GitHub Copilot in Docker
+	@echo "$(BLUE)Running Ralph Copilot in Docker ($(ITERATIONS) iterations, model: $(MODEL))$(NC)"
+	@if [ ! -f "$(RALPH_DIR)/ralph-docker.sh" ]; then \
+		echo "$(YELLOW)Error: Ralph not found. Run 'make ralph-setup' first$(NC)"; \
+		exit 1; \
+	fi
+	@if [ -z "$$GITHUB_TOKEN" ]; then \
+		echo "$(YELLOW)Error: GITHUB_TOKEN environment variable not set$(NC)"; \
+		exit 1; \
+	fi
+	chmod +x $(RALPH_DIR)/ralph-docker.sh
+	./$(RALPH_DIR)/ralph-docker.sh copilot $(ITERATIONS) $(MODEL)
+
+.PHONY: ralph-docker-amp
+ralph-docker-amp: ## Run Ralph with Amp in Docker
+	@echo "$(BLUE)Running Ralph Amp in Docker ($(ITERATIONS) iterations)$(NC)"
+	@if [ ! -f "$(RALPH_DIR)/ralph-docker.sh" ]; then \
+		echo "$(YELLOW)Error: Ralph not found. Run 'make ralph-setup' first$(NC)"; \
+		exit 1; \
+	fi
+	@if [ -z "$$AMP_TOKEN" ]; then \
+		echo "$(YELLOW)Error: AMP_TOKEN environment variable not set$(NC)"; \
+		exit 1; \
+	fi
+	chmod +x $(RALPH_DIR)/ralph-docker.sh
+	./$(RALPH_DIR)/ralph-docker.sh amp $(ITERATIONS)
+
+.PHONY: ralph-compose
+ralph-compose: ## Run Ralph with Docker Compose (Copilot)
+	@echo "$(BLUE)Running Ralph with Docker Compose$(NC)"
+	@if [ -z "$$GITHUB_TOKEN" ]; then \
+		echo "$(YELLOW)Error: GITHUB_TOKEN environment variable not set$(NC)"; \
+		exit 1; \
+	fi
+	cd $(RALPH_DIR) && docker-compose run --rm ralph-copilot
+
+.PHONY: ralph-compose-amp
+ralph-compose-amp: ## Run Ralph with Docker Compose (Amp)
+	@echo "$(BLUE)Running Ralph Amp with Docker Compose$(NC)"
+	@if [ -z "$$AMP_TOKEN" ]; then \
+		echo "$(YELLOW)Error: AMP_TOKEN environment variable not set$(NC)"; \
+		exit 1; \
+	fi
+	cd $(RALPH_DIR) && docker-compose run --rm ralph-amp
+
+.PHONY: ralph-setup
+ralph-setup: ## Set up Ralph as a git submodule
+	@echo "$(BLUE)Setting up Ralph submodule...$(NC)"
+	@if [ -d "ralph" ]; then \
+		echo "$(GREEN)Ralph submodule already exists$(NC)"; \
+	else \
+		git submodule add https://github.com/barracoder/ralph-spike.git ralph; \
+		git submodule update --init --recursive; \
+		echo "$(GREEN)Ralph submodule added successfully$(NC)"; \
+	fi
+	@if [ -f "$(RALPH_DIR)/setup-submodule.sh" ]; then \
+		chmod +x $(RALPH_DIR)/setup-submodule.sh; \
+		./$(RALPH_DIR)/setup-submodule.sh .; \
+	fi
+
+.PHONY: ralph-update
+ralph-update: ## Update Ralph submodule to latest version
+	@echo "$(BLUE)Updating Ralph submodule...$(NC)"
+	git submodule update --remote ralph
+	git add ralph
+	@echo "$(GREEN)Ralph submodule updated. Commit the change with: git commit -m 'Update ralph submodule'$(NC)"
+
+.PHONY: ralph-status
+ralph-status: ## Show Ralph status and progress
+	@echo "$(BLUE)Ralph Status$(NC)"
+	@echo ""
+	@if [ -f "$(PRD_FILE)" ]; then \
+		echo "$(GREEN)PRD File:$(NC) $(PRD_FILE)"; \
+		echo "$(YELLOW)Branch:$(NC) $$(cat $(PRD_FILE) | jq -r '.branchName // "not set"')"; \
+		echo "$(YELLOW)Project:$(NC) $$(cat $(PRD_FILE) | jq -r '.projectName // "not set"')"; \
+		echo "$(YELLOW)Total Stories:$(NC) $$(cat $(PRD_FILE) | jq '.stories | length')"; \
+		echo "$(YELLOW)Completed:$(NC) $$(cat $(PRD_FILE) | jq '[.stories[] | select(.passes == true)] | length')"; \
+		echo "$(YELLOW)Pending:$(NC) $$(cat $(PRD_FILE) | jq '[.stories[] | select(.passes == false)] | length')"; \
+	else \
+		echo "$(YELLOW)No PRD file found at $(PRD_FILE)$(NC)"; \
+	fi
+	@echo ""
+	@if [ -f "$(PROGRESS_FILE)" ]; then \
+		echo "$(GREEN)Recent Progress:$(NC)"; \
+		tail -n 10 $(PROGRESS_FILE); \
+	else \
+		echo "$(YELLOW)No progress file found$(NC)"; \
+	fi
+
+.PHONY: ralph-clean
+ralph-clean: ## Clean Ralph artifacts and logs
+	@echo "$(BLUE)Cleaning Ralph artifacts...$(NC)"
+	rm -f ralph-*.log
+	rm -f progress.txt.bak
+	rm -rf .ralph/
+	@echo "$(GREEN)Clean complete$(NC)"
+
+.PHONY: ralph-validate
+ralph-validate: ## Validate PRD file syntax
+	@echo "$(BLUE)Validating PRD file...$(NC)"
+	@if [ ! -f "$(PRD_FILE)" ]; then \
+		echo "$(YELLOW)Error: PRD file not found at $(PRD_FILE)$(NC)"; \
+		exit 1; \
+	fi
+	@if jq empty $(PRD_FILE) 2>/dev/null; then \
+		echo "$(GREEN)✓ PRD file is valid JSON$(NC)"; \
+		echo "$(YELLOW)Required fields check:$(NC)"; \
+		jq -e '.branchName' $(PRD_FILE) > /dev/null && echo "  $(GREEN)✓ branchName$(NC)" || echo "  $(YELLOW)✗ branchName missing$(NC)"; \
+		jq -e '.stories' $(PRD_FILE) > /dev/null && echo "  $(GREEN)✓ stories$(NC)" || echo "  $(YELLOW)✗ stories missing$(NC)"; \
+		jq -e '.stories[0].id' $(PRD_FILE) > /dev/null && echo "  $(GREEN)✓ story.id$(NC)" || echo "  $(YELLOW)✗ story.id missing$(NC)"; \
+		jq -e '.stories[0].title' $(PRD_FILE) > /dev/null && echo "  $(GREEN)✓ story.title$(NC)" || echo "  $(YELLOW)✗ story.title missing$(NC)"; \
+	else \
+		echo "$(YELLOW)✗ PRD file contains invalid JSON$(NC)"; \
+		exit 1; \
+	fi
+
+.PHONY: ralph-archive
+ralph-archive: ## View archived Ralph runs
+	@echo "$(BLUE)Archived Ralph Runs$(NC)"
+	@if [ -d "scripts/ralph/archive" ]; then \
+		ls -lh scripts/ralph/archive/; \
+	else \
+		echo "$(YELLOW)No archives found$(NC)"; \
+	fi
+
+# Default target
+.DEFAULT_GOAL := help

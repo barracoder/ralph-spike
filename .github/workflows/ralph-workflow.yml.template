@@ -1,0 +1,208 @@
+name: Ralph Automation
+
+# This is a template workflow for running Ralph in GitHub Actions
+# To use:
+# 1. Copy this file to .github/workflows/ralph.yml (remove .template extension)
+# 2. Customize as needed for your project
+# 3. Commit and push
+
+on:
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: 'Maximum iterations for Ralph'
+        required: false
+        default: '10'
+        type: string
+      model:
+        description: 'AI model to use (e.g., gpt-5.1-codex, claude-sonnet-4)'
+        required: false
+        default: 'gpt-5.1-codex'
+        type: string
+      branch:
+        description: 'Branch to run on (leave empty for current branch)'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  ralph-copilot:
+    name: Run Ralph with GitHub Copilot
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
+      
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install GitHub CLI and Copilot extension
+        run: |
+          # Install GitHub CLI
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install -y gh
+          
+          # Install Copilot extension
+          gh extension install github/gh-copilot
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "Ralph Agent"
+          git config --global user.email "ralph@agent.local"
+      
+      - name: Authenticate GitHub CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GITHUB_TOKEN" | gh auth login --with-token
+          gh auth status
+      
+      - name: Run Ralph
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x ralph/scripts/ralph/ralph-copilot.sh
+          ./ralph/scripts/ralph/ralph-copilot.sh ${{ github.event.inputs.iterations }} ${{ github.event.inputs.model }}
+      
+      - name: Push changes
+        if: always()
+        run: |
+          # Check if there are changes to commit
+          if [[ -n $(git status -s) ]]; then
+            git add .
+            git commit -m "Ralph automation run - $(date)" || true
+            git push || echo "No changes to push or push failed"
+          else
+            echo "No changes to commit"
+          fi
+      
+      - name: Upload Ralph artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ralph-output-${{ github.run_number }}
+          path: |
+            scripts/ralph/progress.txt
+            scripts/ralph/prd.json
+            scripts/ralph/archive/
+            screenshots/
+          retention-days: 30
+      
+      - name: Comment on PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let progressContent = '';
+            try {
+              progressContent = fs.readFileSync('scripts/ralph/progress.txt', 'utf8');
+            } catch (error) {
+              progressContent = 'Progress file not found';
+            }
+            
+            const comment = `## Ralph Automation Results
+            
+            **Run**: #${{ github.run_number }}
+            **Iterations**: ${{ github.event.inputs.iterations }}
+            **Model**: ${{ github.event.inputs.model }}
+            
+            <details>
+            <summary>Progress Log</summary>
+            
+            \`\`\`
+            ${progressContent}
+            \`\`\`
+            
+            </details>
+            
+            [View full artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  ralph-docker:
+    name: Run Ralph with Docker
+    runs-on: ubuntu-latest
+    
+    # Uncomment to enable Docker-based Ralph execution
+    if: false
+    
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "Ralph Agent"
+          git config --global user.email "ralph@agent.local"
+      
+      - name: Run Ralph in Docker
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x ralph/scripts/ralph/ralph-docker.sh
+          ./ralph/scripts/ralph/ralph-docker.sh copilot ${{ github.event.inputs.iterations }} ${{ github.event.inputs.model }}
+      
+      - name: Push changes
+        if: always()
+        run: |
+          if [[ -n $(git status -s) ]]; then
+            git add .
+            git commit -m "Ralph Docker automation run - $(date)" || true
+            git push || echo "No changes to push or push failed"
+          else
+            echo "No changes to commit"
+          fi
+      
+      - name: Upload Ralph artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ralph-docker-output-${{ github.run_number }}
+          path: |
+            scripts/ralph/progress.txt
+            scripts/ralph/prd.json
+            scripts/ralph/archive/
+          retention-days: 30

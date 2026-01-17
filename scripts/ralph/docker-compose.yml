@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  ralph-copilot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - RALPH_AGENT=copilot
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - MAX_ITERATIONS=${MAX_ITERATIONS:-10}
+      - MODEL=${MODEL:-gpt-5.1-codex}
+      - GIT_USER_NAME=${GIT_USER_NAME:-Ralph Agent}
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL:-ralph@agent.local}
+    volumes:
+      - ../../:/workspace
+      - ~/.gitconfig:/root/.gitconfig:ro
+      - ~/.ssh:/root/.ssh:ro
+    stdin_open: true
+    tty: true
+
+  ralph-amp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - RALPH_AGENT=amp
+      - AMP_TOKEN=${AMP_TOKEN}
+      - MAX_ITERATIONS=${MAX_ITERATIONS:-10}
+      - GIT_USER_NAME=${GIT_USER_NAME:-Ralph Agent}
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL:-ralph@agent.local}
+    volumes:
+      - ../../:/workspace
+      - ~/.gitconfig:/root/.gitconfig:ro
+      - ~/.ssh:/root/.ssh:ro
+    stdin_open: true
+    tty: true
