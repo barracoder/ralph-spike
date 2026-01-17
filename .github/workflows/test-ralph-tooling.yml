@@ -1,0 +1,171 @@
+name: Test Ralph Tooling
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'scripts/ralph/**'
+      - 'tests/ralph/**'
+      - '.github/workflows/test-ralph-tooling.yml'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - 'scripts/ralph/**'
+      - 'tests/ralph/**'
+      - '.github/workflows/test-ralph-tooling.yml'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+  workflow_dispatch:
+
+jobs:
+  lint-shell-scripts:
+    name: Lint Shell Scripts
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+      
+      - name: Run shellcheck on Ralph scripts
+        run: |
+          find scripts/ralph -name "*.sh" -type f | while read -r script; do
+            echo "Checking $script"
+            shellcheck -S warning "$script" || exit 1
+          done
+      
+      - name: Run shellcheck on test scripts
+        run: |
+          find tests/ralph -name "*.sh" -type f | while read -r script; do
+            echo "Checking $script"
+            shellcheck -S warning "$script" || exit 1
+          done
+
+  validate-dockerfile:
+    name: Validate Dockerfile
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install hadolint
+        run: |
+          wget -O /tmp/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
+          chmod +x /tmp/hadolint
+          sudo mv /tmp/hadolint /usr/local/bin/hadolint
+      
+      - name: Lint Dockerfile
+        if: hashFiles('Dockerfile') != ''
+        run: |
+          if [ -f Dockerfile ]; then
+            hadolint Dockerfile
+          else
+            echo "Dockerfile not found, skipping"
+          fi
+
+  test-bash-unit:
+    name: Run Bash Unit Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+      
+      - name: Run script tests
+        run: |
+          cd tests/ralph
+          bash test_scripts.sh
+      
+      - name: Run template tests
+        run: |
+          cd tests/ralph
+          bash test_templates.sh
+      
+      - name: Run integration tests
+        run: |
+          cd tests/ralph
+          bash test_integration.sh
+
+  test-docker-build:
+    name: Test Docker Build
+    runs-on: ubuntu-latest
+    if: hashFiles('Dockerfile') != ''
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build Docker image
+        run: |
+          if [ -f Dockerfile ]; then
+            docker build -t ralph-test:latest .
+          else
+            echo "Dockerfile not found, skipping"
+            exit 0
+          fi
+      
+      - name: Test Docker image
+        run: |
+          if docker images | grep -q ralph-test; then
+            echo "Testing required tools in image..."
+            docker run --rm ralph-test:latest which git
+            docker run --rm ralph-test:latest which jq
+          else
+            echo "Docker image not built, skipping"
+          fi
+
+  test-runner:
+    name: Run All Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq shellcheck
+      
+      - name: Run test suite
+        run: |
+          cd tests/ralph
+          bash run_tests.sh
+
+  test-cross-platform:
+    name: Test on macOS
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          brew install jq shellcheck
+      
+      - name: Run bash unit tests
+        run: |
+          cd tests/ralph
+          bash test_scripts.sh
+          bash test_templates.sh
+          bash test_integration.sh

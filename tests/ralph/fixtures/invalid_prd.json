@@ -1,0 +1,9 @@
+{
+  "branchName": "ralph/test-feature",
+  "stories": [
+    {
+      "id": 1,
+      "title": "Missing required fields"
+      # This is invalid JSON - has comments and missing fields
+    }
+  ]

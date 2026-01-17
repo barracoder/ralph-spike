@@ -1,0 +1,19 @@
+{
+  "branchName": "ralph/test-feature",
+  "projectName": "Test Project",
+  "stories": [
+    {
+      "id": 1,
+      "category": "setup",
+      "title": "Test story",
+      "description": "A test story for validation",
+      "acceptance_criteria": [
+        "Test passes"
+      ],
+      "verification_steps": [
+        "Run tests"
+      ],
+      "passes": false
+    }
+  ]
+}
