@@ -124,6 +124,18 @@ Modular behaviors that AI agents can load:
 
 The `ralph-spike` branch contains a sample Space Invaders game built with Blazor WebAssembly, demonstrating the Ralph workflow in action.
 
+## Testing
+
+A comprehensive test suite validates Ralph tooling:
+
+```bash
+# Run all tests
+cd tests/ralph
+./run_tests.sh
+```
+
+See [tests/ralph/README.md](tests/ralph/README.md) for detailed test documentation.
+
 ## License
 
 MIT
