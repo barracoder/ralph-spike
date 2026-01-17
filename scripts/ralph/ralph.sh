@@ -60,7 +60,7 @@ ralph_startup_banner
 
 echo "Starting Ralph - Max iterations: $MAX_ITERATIONS"
 
-for i in $(seq 1 $MAX_ITERATIONS); do
+for i in $(seq 1 "$MAX_ITERATIONS"); do
   ralph_iteration_header "$i" "$MAX_ITERATIONS"
   
   # Run amp with the ralph prompt

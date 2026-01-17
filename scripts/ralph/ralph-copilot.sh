@@ -71,7 +71,7 @@ ralph_startup_banner
 
 echo "Starting Ralph (Copilot) - Max iterations: $MAX_ITERATIONS, Model: $MODEL"
 
-for i in $(seq 1 $MAX_ITERATIONS); do
+for i in $(seq 1 "$MAX_ITERATIONS"); do
   ralph_iteration_header "$i" "$MAX_ITERATIONS"
   
   # Read prompt and send to Copilot CLI in non-interactive mode

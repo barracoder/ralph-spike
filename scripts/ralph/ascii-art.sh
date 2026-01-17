@@ -2,8 +2,8 @@
 # ASCII art and banner functions for Ralph Wiggum
 # Copyright (c) 2024-2026 Mark Green, 3I Systems Ltd
 
-# Small icon for inline use
-RALPH_ICON=' (~_~) '
+# Small icon for inline use (exported for external scripts)
+export RALPH_ICON=' (~_~) '
 
 # Large ASCII art banner - Ralph Wiggum's face
 ralph_banner_large() {
