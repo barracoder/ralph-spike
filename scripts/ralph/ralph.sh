@@ -1,6 +1,12 @@
 #!/bin/bash
-# Ralph Wiggum - Long-running AI agent loop
-# Usage: ./ralph.sh [max_iterations]
+# ═══════════════════════════════════════════════════════════════════════════════
+# Ralph - Autonomous AI Coding Agent Workflow
+# Copyright (c) 2024-2026 Mark Green, 3I Systems Ltd
+# All rights reserved.
+#
+# This software is provided under license. Unauthorized copying, modification,
+# distribution, or use of this software, via any medium, is strictly prohibited.
+# ═══════════════════════════════════════════════════════════════════════════════
 
 set -e
 
@@ -50,6 +56,14 @@ if [ ! -f "$PROGRESS_FILE" ]; then
   echo "Started: $(date)" >> "$PROGRESS_FILE"
   echo "---" >> "$PROGRESS_FILE"
 fi
+
+# Display copyright banner
+echo "╔═══════════════════════════════════════════════════════════════════════════╗"
+echo "║                    🤖 RALPH - Autonomous Coding Agent                     ║"
+echo "║                                                                           ║"
+echo "║  Copyright (c) 2024-2026 Mark Green, 3I Systems Ltd. All rights reserved.║"
+echo "╚═══════════════════════════════════════════════════════════════════════════╝"
+echo ""
 
 echo "Starting Ralph - Max iterations: $MAX_ITERATIONS"
 

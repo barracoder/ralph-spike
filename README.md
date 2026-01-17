@@ -124,6 +124,8 @@ Modular behaviors that AI agents can load:
 
 The `ralph-spike` branch contains a sample Space Invaders game built with Blazor WebAssembly, demonstrating the Ralph workflow in action.
 
+---
+
 ## License
 
-MIT
+Copyright (c) 2024-2026 Mark Green, 3I Systems Ltd. All rights reserved.

@@ -1,9 +1,12 @@
 #!/bin/bash
-# Ralph Wiggum - Long-running AI agent loop (GitHub Copilot CLI version)
-# Usage: ./ralph-copilot.sh [max_iterations] [model]
+# ═══════════════════════════════════════════════════════════════════════════════
+# Ralph - Autonomous AI Coding Agent Workflow
+# Copyright (c) 2024-2026 Mark Green, 3I Systems Ltd
+# All rights reserved.
 #
-# Requires: GitHub Copilot CLI
-# Models: claude-sonnet-4, gpt-5, gpt-5.1-codex, gemini-3-pro-preview, etc.
+# This software is provided under license. Unauthorized copying, modification,
+# distribution, or use of this software, via any medium, is strictly prohibited.
+# ═══════════════════════════════════════════════════════════════════════════════
 
 set -e
 
@@ -61,6 +64,14 @@ if [ ! -f "$PROGRESS_FILE" ]; then
   echo "Started: $(date)" >> "$PROGRESS_FILE"
   echo "---" >> "$PROGRESS_FILE"
 fi
+
+# Display copyright banner
+echo "╔═══════════════════════════════════════════════════════════════════════════╗"
+echo "║                    🤖 RALPH - Autonomous Coding Agent                     ║"
+echo "║                                                                           ║"
+echo "║  Copyright (c) 2024-2026 Mark Green, 3I Systems Ltd. All rights reserved.║"
+echo "╚═══════════════════════════════════════════════════════════════════════════╝"
+echo ""
 
 echo "Starting Ralph (Copilot) - Max iterations: $MAX_ITERATIONS, Model: $MODEL"
 
