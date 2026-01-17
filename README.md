@@ -1,5 +1,22 @@
 # Ralph Workflow Template
 
+```
+        _______________
+       /               \
+      /  ~~~~~~~~~~~    \
+     |   __     __      |
+     |  (oo)   (oo)     |
+     |       <          |
+     |     (---)        |
+     |      \___/       |
+      \                /
+       \______________/
+         ||       ||
+         ||_______||
+```
+
+> "Me fail English? That's unpossible!" - Ralph Wiggum
+
 A template repository for autonomous AI coding workflows using the Ralph agent loop. Clone this repo to bootstrap Ralph skills, scripts, and configuration for any new project.
 
 ## What is Ralph?

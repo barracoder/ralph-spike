@@ -7,6 +7,10 @@
 
 set -e
 
+# Source ASCII art functions
+SCRIPT_DIR_TEMP="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR_TEMP/ascii-art.sh"
+
 MAX_ITERATIONS=${1:-10}
 MODEL=${2:-gpt-5.1-codex}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -62,13 +66,13 @@ if [ ! -f "$PROGRESS_FILE" ]; then
   echo "---" >> "$PROGRESS_FILE"
 fi
 
+# Show startup banner
+ralph_startup_banner
+
 echo "Starting Ralph (Copilot) - Max iterations: $MAX_ITERATIONS, Model: $MODEL"
 
 for i in $(seq 1 $MAX_ITERATIONS); do
-  echo ""
-  echo "═══════════════════════════════════════════════════════"
-  echo "  Ralph Iteration $i of $MAX_ITERATIONS (Copilot)"
-  echo "═══════════════════════════════════════════════════════"
+  ralph_iteration_header "$i" "$MAX_ITERATIONS"
   
   # Read prompt and send to Copilot CLI in non-interactive mode
   PROMPT=$(cat "$SCRIPT_DIR/prompt.md")
@@ -79,7 +83,7 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   # Check for completion signal
   if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
     echo ""
-    echo "Ralph completed all tasks!"
+    ralph_success
     echo "Completed at iteration $i of $MAX_ITERATIONS"
     exit 0
   fi
@@ -89,6 +93,7 @@ for i in $(seq 1 $MAX_ITERATIONS); do
 done
 
 echo ""
+ralph_error
 echo "Ralph reached max iterations ($MAX_ITERATIONS) without completing all tasks."
 echo "Check $PROGRESS_FILE for status."
 exit 1
